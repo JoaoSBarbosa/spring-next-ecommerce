@@ -45,4 +45,16 @@ public class StateController {
         ApiResponseHandler apiResponseHandler = stateService.insert(stateDTO);
         return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponseHandler> update(@RequestBody StateDTO dto, @PathVariable Long id){
+        ApiResponseHandler apiResponseHandler = stateService.update(dto, id);
+        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponseHandler> delete(@PathVariable Long id){
+        ApiResponseHandler apiResponseHandler = stateService.delete(id);
+        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    }
 }

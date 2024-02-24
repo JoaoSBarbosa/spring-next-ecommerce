@@ -7,14 +7,14 @@ import java.util.Date;
 
 @Data
 public class StateDTO implements Serializable {
-    private Integer id;
+    private Long id;
     private String name;
     private String acronym;
     private Date creationDate;
     private Date updateDate;
 
     public StateDTO(){}
-    public StateDTO(Integer id, String name, String acronym, Date creationDate, Date updateDate) {
+    public StateDTO(Long id, String name, String acronym, Date creationDate, Date updateDate) {
         this.id = id;
         this.name = name;
         this.acronym = acronym;
