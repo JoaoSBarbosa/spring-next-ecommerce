@@ -52,15 +52,22 @@ public class StateService {
                     .object(null)
                     .build();
         }
-        State state = new State(dto.getName(), dto.getAcronym(), dto.getCreationDate(), dto.getUpdateDate());
+        State state = new State();
+        copyData(dto, state);
         state = stateRepository.save(state);
 
         return ApiResponseHandler.builder()
-                .message("O estado " + dto.getName() + " jregistrado com sucesso")
+                .message("O estado " + dto.getName() + " registrado com sucesso")
                 .sendDateTime(Util.getDateTime())
                 .status(HttpStatus.OK)
                 .object(state)
                 .build();
+    }
+
+    private void copyData(StateDTO source, State insert) {
+        insert.setName(source.getName());
+        insert.setAcronym(source.getAcronym());
+        insert.setCreationDate(new Date());
     }
 
     public ApiResponseHandler update(StateDTO dto, Long id) {
@@ -90,6 +97,7 @@ public class StateService {
 
     }
 
+    @Transactional
     public ApiResponseHandler delete(Long id) {
         State stateOptional = stateRepository.findById(id).orElse(null);
 
