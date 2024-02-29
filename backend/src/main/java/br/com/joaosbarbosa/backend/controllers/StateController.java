@@ -1,7 +1,5 @@
 package br.com.joaosbarbosa.backend.controllers;
-
 import br.com.joaosbarbosa.backend.dto.StateDTO;
-import br.com.joaosbarbosa.backend.entities.State;
 import br.com.joaosbarbosa.backend.services.StateService;
 import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +16,10 @@ public class StateController {
     StateService stateService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<StateDTO> findById(@PathVariable Long id){
-        StateDTO stateDTO = stateService.findById(id);
+    public ResponseEntity<ApiResponseHandler> findById(@PathVariable Long id){
+        ApiResponseHandler stateDTO = stateService.findById(id);
 
-        return  ResponseEntity.ok().body(stateDTO);
+        return new ResponseEntity<>(stateDTO,stateDTO.getStatus());
     }
 
     @GetMapping
@@ -30,14 +28,11 @@ public class StateController {
             @RequestParam(value = "linesPerPage", defaultValue = "20") Integer linesPerPage,
             @RequestParam(value = "direction", defaultValue = "ASC") String direction,
             @RequestParam(value = "orderBy", defaultValue = "id") String orderBy
-
     )
     {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-
         Page<StateDTO> stateDTOS = stateService.page(pageRequest);
         return ResponseEntity.ok().body(stateDTOS);
-
     }
 
     @PostMapping

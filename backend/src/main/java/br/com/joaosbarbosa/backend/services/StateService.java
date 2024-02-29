@@ -5,16 +5,13 @@ import br.com.joaosbarbosa.backend.entities.State;
 import br.com.joaosbarbosa.backend.repositories.StateRepository;
 import br.com.joaosbarbosa.backend.utils.Util;
 import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -24,12 +21,24 @@ public class StateService {
     @Autowired
     StateRepository stateRepository;
 
-    public StateDTO findById(Long id) {
+    @Transactional(readOnly = true)
+    public ApiResponseHandler findById(Long id) {
         Optional<State> stateOptional = stateRepository.findById(id);
-        if (stateOptional.isPresent()) {
-            return new StateDTO(stateOptional.get());
+        if (!stateOptional.isPresent()) {
+            return ApiResponseHandler.builder()
+                    .message("Não existe registro de estado com o id informando")
+                    .sendDateTime(Util.getDateTime())
+                    .object(null)
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
         }
-        return null;
+        return ApiResponseHandler.builder()
+                .message("Estado localizado")
+                .sendDateTime(Util.getDateTime())
+                .object(stateOptional.get())
+                .status(HttpStatus.OK)
+                .build();
+
     }
 
     @Transactional(readOnly = true)
@@ -42,6 +51,7 @@ public class StateService {
         return null;
     }
 
+    @Transactional
     public ApiResponseHandler insert(StateDTO dto) {
         Optional<State> stateOptional = stateRepository.findByName(dto.getName());
         if (stateOptional.isPresent()) {
@@ -64,12 +74,7 @@ public class StateService {
                 .build();
     }
 
-    private void copyData(StateDTO source, State insert) {
-        insert.setName(source.getName());
-        insert.setAcronym(source.getAcronym());
-        insert.setCreationDate(new Date());
-    }
-
+    @Transactional
     public ApiResponseHandler update(StateDTO dto, Long id) {
         Optional<State> stateOptional = stateRepository.findById(id);
         if (!stateOptional.isPresent()) {
@@ -118,6 +123,12 @@ public class StateService {
                     .object(null)
                     .build();
         }
+    }
+
+    private void copyData(StateDTO source, State insert) {
+        insert.setName(source.getName());
+        insert.setAcronym(source.getAcronym());
+        insert.setCreationDate(new Date());
     }
 
 }

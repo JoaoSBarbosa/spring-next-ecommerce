@@ -11,4 +11,17 @@ public class ApiResponseHandler {
     private HttpStatus status;
     private Object object;
     private String sendDateTime;
+
+    public ApiResponseHandler() {
+    }
+
+    public ApiResponseHandler(String message, HttpStatus status, Object object, String sendDateTime) {
+        this.message = message;
+        this.status = status;
+        this.object = object;
+        this.sendDateTime = sendDateTime;
+    }
 }
+
+
+
