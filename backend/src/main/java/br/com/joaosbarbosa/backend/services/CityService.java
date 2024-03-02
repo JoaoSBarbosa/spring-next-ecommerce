@@ -53,27 +53,17 @@ public class CityService {
         Page<City> list = cityRepository.findAll(pageable);
 
         if (list.isEmpty()) {
-            System.out.println("NÃO TEM NADA");
             return null;
 
         }
-        System.out.println("TEM ITEM");
         return list.map(CityDTO::new);
     }
 
     @Transactional
     public ApiResponseHandler insert(CityDTO dto) {
 
-        System.out.println("TESTE" + dto.getState());
         City city = new City();
-        city.setCityId(dto.getId());
-        city.setName(dto.getName());
-        State state = stateRepository.findById(dto.getState().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Estado não encontrado com o ID: " + dto.getState().getId()));
-
-
-        city.setState(state);
-        city.setCreatedDate(new Date());
+        copyDtoToEntity(dto, city);
         city = cityRepository.save(city);
 
         return ApiResponseHandler.builder()
@@ -133,5 +123,15 @@ public class CityService {
                 .object(null)
                 .build();
 
+    }
+
+
+    public void copyDtoToEntity(CityDTO source, City entity) {
+        entity.setCityId(source.getId());
+        entity.setName(source.getName());
+        State state = stateRepository.findById(source.getState().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Estado não encontrado com o ID: " + source.getState().getId()));
+        entity.setState(state);
+        entity.setCreatedDate(new Date());
     }
 }

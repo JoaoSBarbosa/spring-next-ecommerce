@@ -1,6 +1,7 @@
 package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class City implements Serializable {
     private Date updateDate;
 
     @ManyToOne
+//    @JsonBackReference
     @JoinColumn(name = "estado")
     private State state;
 

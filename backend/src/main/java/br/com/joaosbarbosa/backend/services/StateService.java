@@ -48,6 +48,7 @@ public class StateService {
         if (!states.isEmpty()) {
             return states.map(StateDTO::new);
         }
+
         return null;
     }
 

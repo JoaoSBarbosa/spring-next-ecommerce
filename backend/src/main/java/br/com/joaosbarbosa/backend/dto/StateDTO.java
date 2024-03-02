@@ -1,9 +1,12 @@
 package br.com.joaosbarbosa.backend.dto;
+import br.com.joaosbarbosa.backend.entities.City;
 import br.com.joaosbarbosa.backend.entities.State;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class StateDTO implements Serializable {
@@ -28,5 +31,6 @@ public class StateDTO implements Serializable {
         creationDate = state.getCreationDate();
         updateDate = state.getUpdateDate();
     }
+
 
 }

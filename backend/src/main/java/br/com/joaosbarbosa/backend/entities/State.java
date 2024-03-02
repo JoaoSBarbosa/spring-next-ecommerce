@@ -1,11 +1,14 @@
 package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -29,6 +32,9 @@ public class State {
     @Column(name = "data_atualizacao")
     private Date updateDate;
 
+//    @OneToMany(mappedBy = "state")
+//    @JsonBackReference
+//    private List<City> cities = new ArrayList<>();
     public State(){}
 
     public State(String name, String acronym, Date creationDate, Date updateDate) {
