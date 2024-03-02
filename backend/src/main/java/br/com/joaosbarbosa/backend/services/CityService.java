@@ -2,9 +2,12 @@ package br.com.joaosbarbosa.backend.services;
 
 import br.com.joaosbarbosa.backend.dto.CityDTO;
 import br.com.joaosbarbosa.backend.entities.City;
+import br.com.joaosbarbosa.backend.entities.State;
 import br.com.joaosbarbosa.backend.repositories.CityRepository;
+import br.com.joaosbarbosa.backend.repositories.StateRepository;
 import br.com.joaosbarbosa.backend.utils.Util;
 import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +23,8 @@ public class CityService {
 
     @Autowired
     CityRepository cityRepository;
+    @Autowired
+    StateRepository stateRepository;
 
     @Transactional(readOnly = true)
     public ApiResponseHandler findById(Long id) {
@@ -46,15 +51,28 @@ public class CityService {
     @Transactional(readOnly = true)
     public Page<CityDTO> page(Pageable pageable) {
         Page<City> list = cityRepository.findAll(pageable);
+
+        if (list.isEmpty()) {
+            System.out.println("NÃO TEM NADA");
+            return null;
+
+        }
+        System.out.println("TEM ITEM");
         return list.map(CityDTO::new);
     }
+
     @Transactional
     public ApiResponseHandler insert(CityDTO dto) {
 
+        System.out.println("TESTE" + dto.getState());
         City city = new City();
         city.setCityId(dto.getId());
         city.setName(dto.getName());
-        city.setEstado(dto.getState());
+        State state = stateRepository.findById(dto.getState().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Estado não encontrado com o ID: " + dto.getState().getId()));
+
+
+        city.setState(state);
         city.setCreatedDate(new Date());
         city = cityRepository.save(city);
 
@@ -81,7 +99,7 @@ public class CityService {
 
         City city = cityOptional.get();
 
-        city.setEstado(dto.getState());
+        city.setState(dto.getState());
         city.setName(dto.getName());
         city.setUpdateDate(new Date());
 

@@ -30,6 +30,6 @@ public class CityDTO implements Serializable {
         name = entity.getName();
         createdDate = entity.getCreatedDate();
         updateDate = entity.getUpdateDate();
-        state = entity.getEstado();
+        state = entity.getState();
     }
 }

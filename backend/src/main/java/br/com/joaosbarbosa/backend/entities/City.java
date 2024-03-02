@@ -14,6 +14,7 @@ public class City implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_cidade")
     private Long cityId;
 
     @Column(name = "nome")
@@ -28,8 +29,10 @@ public class City implements Serializable {
     private Date updateDate;
 
     @ManyToOne
-    @JoinColumn(name = "id")
-    private State estado;
+    @JoinColumn(name = "estado")
+    private State state;
+
+
     public City(){}
 
     public City(Long cityId, String name, Date createdDate, Date updateDate) {
@@ -71,11 +74,11 @@ public class City implements Serializable {
         this.updateDate = updateDate;
     }
 
-    public State getEstado() {
-        return estado;
+    public State getState() {
+        return state;
     }
 
-    public void setEstado(State state) {
-        this.estado = state;
+    public void setState(State state) {
+        this.state = state;
     }
 }
