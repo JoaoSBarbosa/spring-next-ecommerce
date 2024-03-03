@@ -13,6 +13,7 @@ import java.util.Date;
 public class Brand implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_marca")
     private Long brandId;
 
     @Column(name = "nome_marca")
