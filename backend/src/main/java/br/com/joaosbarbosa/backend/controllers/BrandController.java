@@ -42,4 +42,10 @@ public class BrandController {
         ApiResponseHandler apiResponseHandler = brandService.update(dto, brand_id);
         return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
     }
+
+    @DeleteMapping("/{brand_id}")
+    public ResponseEntity<ApiResponseHandler> delete(@PathVariable Long brand_id){
+        ApiResponseHandler apiResponseHandler = brandService.delete(brand_id);
+        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    }
 }

@@ -79,7 +79,7 @@ public class BrandService {
 
     @Transactional
     public ApiResponseHandler update(BrandDTO dto, Long brandId) {
-        System.out.println("CHEGOU O ID: "+brandId);
+        System.out.println("CHEGOU O ID: " + brandId);
 //        Optional<Brand> brandOptional = brandRepository.findById(brandId);
         try {
 
@@ -95,6 +95,28 @@ public class BrandService {
                     .build();
         } catch (EntityNotFoundException e) {
             throw new ControllerNotFoundException("Não foi localizado registros de Marcas com o id informado: " + brandId);
+        }
+    }
+    
+    @Transactional
+    public ApiResponseHandler delete(Long brandId) {
+        try {
+            Optional<Brand> brand = brandRepository.findById(brandId);
+
+            if (brand.isPresent()) {
+                brandRepository.deleteById(brand.get().getBrandId());
+                return ApiResponseHandler.builder()
+                        .message("Marca '" + brand.get().getBrandName() + "' deletada com sucesso do sistema!")
+                        .object(brand.get())
+                        .sendDateTime(Util.getDateTime())
+                        .status(HttpStatus.OK)
+                        .build();
+            } else {
+                throw new ControllerNotFoundException("Não foi localizado registros de marcas com o id informado: " + brandId);
+            }
+
+        } catch (EntityNotFoundException e) {
+            throw new ControllerNotFoundException("Ocorreu um erro: " + e);
         }
     }
 
