@@ -97,7 +97,7 @@ public class BrandService {
             throw new ControllerNotFoundException("Não foi localizado registros de Marcas com o id informado: " + brandId);
         }
     }
-    
+
     @Transactional
     public ApiResponseHandler delete(Long brandId) {
         try {
