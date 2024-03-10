@@ -1,6 +1,7 @@
 package br.com.joaosbarbosa.backend.dto;
 
 import br.com.joaosbarbosa.backend.entities.Brand;
+import br.com.joaosbarbosa.backend.entities.Category;
 import br.com.joaosbarbosa.backend.entities.Product;
 import lombok.Data;
 
@@ -16,11 +17,21 @@ public class ProductDTO {
     private Date creationDate;
     private Date updateDate;
     private Brand brand;
+    private Category category;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(Long descriptionId, String shortDescription, String detailedDescription, Double saleValue, Double valueCost, Date creationDate, Date updateDate, Brand brand) {
+    public ProductDTO(
+            Long descriptionId,
+            String shortDescription,
+            String detailedDescription,
+            Double saleValue,
+            Double valueCost,
+            Date creationDate,
+            Date updateDate,
+            Brand brand,
+            Category category) {
         this.descriptionId = descriptionId;
         this.shortDescription = shortDescription;
         this.detailedDescription = detailedDescription;
@@ -29,16 +40,18 @@ public class ProductDTO {
         this.creationDate = creationDate;
         this.updateDate = updateDate;
         this.brand = brand;
+        this.category = category;
     }
 
     public ProductDTO(Product product) {
-        this.descriptionId = product.getDescriptionId();
-        this.shortDescription = product.getShortDescription();
-        this.detailedDescription = product.getDetailedDescription();
-        this.saleValue = product.getSaleValue();
-        this.valueCost = product.getValueCost();
-        this.creationDate = product.getCreationDate();
-        this.updateDate = product.getUpdateDate();
-        this.brand = product.getBrand();
+        descriptionId = product.getProductId();
+        shortDescription = product.getShortDescription();
+        detailedDescription = product.getDetailedDescription();
+        saleValue = product.getSaleValue();
+        valueCost = product.getValueCost();
+        creationDate = product.getCreationDate();
+        updateDate = product.getUpdateDate();
+        brand = product.getBrand();
+        category = product.getCategory();
     }
 }

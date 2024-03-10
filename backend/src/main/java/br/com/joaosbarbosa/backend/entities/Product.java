@@ -14,11 +14,11 @@ public class Product implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pro_id_descricao")
-    private Long descriptionId;
-    @Column(name = "pro_descricao_curta")
+    @Column(name = "pro_id_produto")
+    private Long productId;
+    @Column(name = "pro_descricao_curta",unique = true)
     private String shortDescription;
-    @Column(name = "pro_descricao_detalhada")
+    @Column(name = "pro_descricao_detalhada",unique = true)
     private String detailedDescription;
     @Column(name = "pro_valor_venda")
     private Double saleValue;
@@ -34,10 +34,24 @@ public class Product implements Serializable {
     @JoinColumn(name = "pro_id_marca")
     private Brand brand;
 
+    @ManyToOne
+    @JoinColumn(name = "pro_id_categoria")
+    private Category category;
+
     public Product(){}
 
-    public Product(Long descriptionId, String shortDescription, String detailedDescription, Double saleValue, Double valueCost, Date creationDate, Date updateDate, Brand brand) {
-        this.descriptionId = descriptionId;
+    public Product(
+            Long productId,
+            String shortDescription,
+            String detailedDescription,
+            Double saleValue,
+            Double valueCost,
+            Date creationDate,
+            Date updateDate,
+            Brand brand,
+            Category category)
+    {
+        this.productId = productId;
         this.shortDescription = shortDescription;
         this.detailedDescription = detailedDescription;
         this.saleValue = saleValue;
@@ -45,5 +59,6 @@ public class Product implements Serializable {
         this.creationDate = creationDate;
         this.updateDate = updateDate;
         this.brand = brand;
+        this.category = category;
     }
 }
