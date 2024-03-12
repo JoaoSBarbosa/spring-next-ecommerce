@@ -29,7 +29,7 @@ public class City implements Serializable {
     @Column(name = "data_atualizacao")
     private Date updateDate;
 
-    @ManyToOne
+    @ManyToOne // muitas cidades para um estado
 //    @JsonBackReference
     @JoinColumn(name = "estado")
     private State state;
