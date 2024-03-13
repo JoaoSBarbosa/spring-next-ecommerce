@@ -19,7 +19,8 @@ public class PersonDTO implements Serializable {
     private String email;
     private String password;
     private String address;
-    private Integer zipCode;
+    private String district;
+    private String zipCode;
     private Date creationDate;
     private City city;
 
@@ -34,13 +35,15 @@ public class PersonDTO implements Serializable {
             String email,
             String password,
             String address,
-            Integer zipCode, Date creationDate, City city) {
+            String district,
+            String zipCode, Date creationDate, City city) {
         this.personId = personId;
         this.cpf = cpf;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.district = district;
         this.address = address;
         this.zipCode = zipCode;
         this.creationDate = creationDate;
@@ -55,6 +58,7 @@ public class PersonDTO implements Serializable {
         email = entity.getEmail();
         password = entity.getPassword();
         address = entity.getAddress();
+        district = entity.getDistrict();
         zipCode = entity.getZipCode();
         creationDate = entity.getCreationDate();
         city = entity.getCity();

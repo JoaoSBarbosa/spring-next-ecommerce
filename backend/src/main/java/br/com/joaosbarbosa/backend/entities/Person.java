@@ -32,12 +32,17 @@ public class Person implements Serializable {
 
     @Column(name = "endereco")
     private String address;
+    @Column(name = "bairro")
+    private String district;
 
     @Column(name = "cep")
-    private Integer zipCode;
+    private String zipCode;
 
     @Column(name = "data_criacao")
     private Date creationDate;
+
+    @Column(name = "data_atualizacao")
+    private Date updateDate;
 
     @ManyToOne
     @JoinColumn(name = "id_cidade")
@@ -54,7 +59,8 @@ public class Person implements Serializable {
             String email,
             String password,
             String address,
-            Integer zipCode,
+            String district,
+            String zipCode,
             Date creationDate,
             City city) {
         this.personId = personId;
@@ -64,6 +70,7 @@ public class Person implements Serializable {
         this.email = email;
         this.password = password;
         this.address = address;
+        this.district = district;
         this.zipCode = zipCode;
         this.creationDate = creationDate;
         this.city = city;
