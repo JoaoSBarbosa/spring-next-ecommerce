@@ -8,13 +8,10 @@ import br.com.joaosbarbosa.backend.repositories.BrandRepository;
 import br.com.joaosbarbosa.backend.repositories.CategoryRepository;
 import br.com.joaosbarbosa.backend.repositories.ProductRepository;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
-import br.com.joaosbarbosa.backend.utils.Util;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,24 +23,18 @@ public class ProductService {
 
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    BrandRepository brandRepository;
+    @Autowired
+    CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public ApiResponseHandler getById(Long productId) {
+    public ProductDTO getById(Long productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .message("Não foi localizado registros de produtos com o id informado: " + productId)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
+            return null;
         }
-        return ApiResponseHandler.builder()
-                .message("Produto '" + productOptional.get().getShortDescription() + "' localizado com sucesso!")
-                .sendDateTime(Util.getDateTime())
-                .object(productOptional.get())
-                .status(HttpStatus.OK)
-                .build();
+        return new ProductDTO(productOptional.get());
     }
 
     @Transactional(readOnly = true)
@@ -56,41 +47,26 @@ public class ProductService {
     }
 
     @Transactional
-    public ApiResponseHandler insert(ProductDTO source) {
+    public ProductDTO insert(ProductDTO source) {
         Product product = new Product();
         copyDtoToEntity(source, product, false);
         product = productRepository.save(product);
-        return ApiResponseHandler.builder()
-                .message("Produto '" + product.getShortDescription() + " cadastrado com sucesso!")
-                .sendDateTime(Util.getDateTime())
-                .status(HttpStatus.OK)
-                .object(product)
-                .build();
+        return new ProductDTO(product);
     }
 
 
     @Transactional
-    public ApiResponseHandler update(ProductDTO source, Long productId) {
+    public ProductDTO update(ProductDTO source, Long productId) {
         Product productDescriptions = productRepository.getByShortAndDetailsDescription(source.getShortDescription(), source.getDetailedDescription());
         if (productDescriptions != null) {
-            return ApiResponseHandler.builder()
-                    .message("Já existe um registro de produto com a descrição curta '" + productDescriptions.getShortDescription() + " e descição longa '" + productDescriptions.getDetailedDescription() + "' informada!")
-                    .sendDateTime(Util.getDateTime())
-                    .status(HttpStatus.BAD_REQUEST)
-                    .object(productDescriptions)
-                    .build();
+            throw new ControllerNotFoundException("Já existe um registro de produto com a descrição curta '" + productDescriptions.getShortDescription() + " e descição longa '" + productDescriptions.getDetailedDescription() + "' informada!");
         }
         try {
             Product product = productRepository.getReferenceById(productId);
             copyDtoToEntity(source, product, true);
             product = productRepository.save(product);
 
-            return ApiResponseHandler.builder()
-                    .message("Produto '" + product.getShortDescription() + " atualizado com sucesso!")
-                    .sendDateTime(Util.getDateTime())
-                    .status(HttpStatus.OK)
-                    .object(product)
-                    .build();
+            return new ProductDTO(product);
 
         } catch (EntityNotFoundException e) {
             throw new ControllerNotFoundException("Não localizamos registros de produtos com o id informado");
@@ -98,34 +74,16 @@ public class ProductService {
     }
 
     @Transactional
-    public ApiResponseHandler delete(Long productId) {
+    public void delete(Long productId) {
         Optional<Product> product = productRepository.findById(productId);
 
         if (product.isPresent()) {
             productRepository.deleteById(product.get().getProductId());
-
-            return ApiResponseHandler.builder()
-                    .message("Produto '" + product.get().getShortDescription() + " deletado com sucesso!")
-                    .sendDateTime(Util.getDateTime())
-                    .status(HttpStatus.OK)
-                    .object(product.get())
-                    .build();
         }
-
-        return ApiResponseHandler.builder()
-                .message("Não existe produtos com o id informado!" + productId)
-                .sendDateTime(Util.getDateTime())
-                .status(HttpStatus.NOT_FOUND)
-                .object(null)
-                .build();
-
 
     }
 
-    @Autowired
-    BrandRepository brandRepository;
-    @Autowired
-    CategoryRepository categoryRepository;
+ 
 
     private void copyDtoToEntity(ProductDTO source, Product entity, Boolean isUpdate) {
 

@@ -1,10 +1,9 @@
 package br.com.joaosbarbosa.backend.utils.api;
 
 import lombok.Builder;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
 
-@Data
+
 @Builder
 public class ApiResponseHandler {
     private String message;
@@ -21,6 +20,42 @@ public class ApiResponseHandler {
         this.object = object;
         this.sendDateTime = sendDateTime;
     }
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public HttpStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(HttpStatus status) {
+		this.status = status;
+	}
+
+	public Object getObject() {
+		return object;
+	}
+
+	public void setObject(Object object) {
+		this.object = object;
+	}
+
+	public String getSendDateTime() {
+		return sendDateTime;
+	}
+
+	public void setSendDateTime(String sendDateTime) {
+		this.sendDateTime = sendDateTime;
+	}
+    
+    
+
+
 }
 
 

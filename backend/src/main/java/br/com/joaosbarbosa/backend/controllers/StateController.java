@@ -1,7 +1,6 @@
 package br.com.joaosbarbosa.backend.controllers;
 import br.com.joaosbarbosa.backend.dto.StateDTO;
 import br.com.joaosbarbosa.backend.services.StateService;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +15,10 @@ public class StateController {
     StateService stateService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponseHandler> findById(@PathVariable Long id){
-        ApiResponseHandler stateDTO = stateService.findById(id);
+    public ResponseEntity<StateDTO> findById(@PathVariable Long id){
+        StateDTO stateDTO = stateService.findById(id);
 
-        return new ResponseEntity<>(stateDTO,stateDTO.getStatus());
+        return ResponseEntity.ok().body(stateDTO);
     }
 
     @GetMapping
@@ -36,20 +35,19 @@ public class StateController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseHandler> insert(@RequestBody StateDTO stateDTO){
-        ApiResponseHandler apiResponseHandler = stateService.insert(stateDTO);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public ResponseEntity<StateDTO> insert(@RequestBody StateDTO stateDTO){
+        stateDTO = stateService.insert(stateDTO);
+        return ResponseEntity.ok().body(stateDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponseHandler> update(@RequestBody StateDTO dto, @PathVariable Long id){
-        ApiResponseHandler apiResponseHandler = stateService.update(dto, id);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public ResponseEntity<StateDTO> update(@RequestBody StateDTO dto, @PathVariable Long id){
+        StateDTO stateDTO = stateService.update(dto, id);
+        return ResponseEntity.ok().body(stateDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponseHandler> delete(@PathVariable Long id){
-        ApiResponseHandler apiResponseHandler = stateService.delete(id);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public void delete(@PathVariable Long id){
+        stateService.delete(id);
     }
 }

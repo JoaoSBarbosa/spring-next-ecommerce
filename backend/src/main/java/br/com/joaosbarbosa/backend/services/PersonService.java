@@ -6,14 +6,10 @@ import br.com.joaosbarbosa.backend.entities.Person;
 import br.com.joaosbarbosa.backend.repositories.CityRepository;
 import br.com.joaosbarbosa.backend.repositories.PersonRepository;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
-import br.com.joaosbarbosa.backend.utils.Util;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import jakarta.persistence.EntityNotFoundException;
-import org.hibernate.type.descriptor.java.LongJavaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,23 +27,13 @@ public class PersonService {
     PersonRepository personRepository;
 
     @Transactional(readOnly = true)
-    public ApiResponseHandler getById(Long personId) {
+    public PersonDTO getById(Long personId) {
         Optional<Person> personOptional = personRepository.findById(personId);
         if (!personOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .object(null)
-                    .status(HttpStatus.NOT_FOUND)
-                    .sendDateTime(Util.getDateTime())
-                    .message("Não foi localizado registros de pessoas com o id informado: " + personId)
-                    .build();
+            return null;
         }
         String stringBuilder = personOptional.get().getFirstName() + " " + personOptional.get().getLastName();
-        return ApiResponseHandler.builder()
-                .object(personOptional.get())
-                .status(HttpStatus.OK)
-                .sendDateTime(Util.getDateTime())
-                .message("Registro do '" + stringBuilder + "' localizado com sucesso!")
-                .build();
+        return new PersonDTO(personOptional.get());
     }
 
     @Transactional(readOnly = true)
@@ -61,49 +47,29 @@ public class PersonService {
     }
 
     @Transactional
-    public ApiResponseHandler insert(PersonDTO source) {
+    public PersonDTO insert(PersonDTO source) {
         List<String> missingFields = findMissingRequiredFields(source);
 
         if (!missingFields.isEmpty()) {
             String message = "Os seguintes campos obrigatórios estão vazios: " + String.join(",", missingFields);
-            return ApiResponseHandler.builder()
-                    .message(message)
-                    .status(HttpStatus.BAD_REQUEST)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .build();
+            return null;
         }
         if (!validateCPF(source.getCpf())) {
-            return ApiResponseHandler.builder()
-                    .message("O CPF informado não é válido!")
-                    .status(HttpStatus.BAD_REQUEST)
-                    .sendDateTime(Util.getDateTime())
-                    .object(source.getCpf())
-                    .build();
+            return null;
         }
         Person person = new Person();
         copyDtoToEntity(source, person, false);
         person = personRepository.save(person);
 
-        return ApiResponseHandler.builder()
-                .message("Registro salvo com sucesso!")
-                .status(HttpStatus.OK)
-                .sendDateTime(Util.getDateTime())
-                .object(person)
-                .build();
+        return new PersonDTO(person);
 
     }
 
     @Transactional
-    public ApiResponseHandler update(PersonDTO source, Long personId) {
+    public PersonDTO update(PersonDTO source, Long personId) {
 
         if (!validateCPF(source.getCpf())) {
-            return ApiResponseHandler.builder()
-                    .message("O CPF informado não é válido!")
-                    .status(HttpStatus.BAD_REQUEST)
-                    .sendDateTime(Util.getDateTime())
-                    .object(source.getCpf())
-                    .build();
+            return null;
         }
         try {
 
@@ -111,12 +77,8 @@ public class PersonService {
             copyDtoToEntity(source, person, true);
             person = personRepository.save(person);
 
-            return ApiResponseHandler.builder()
-                    .message("Registro atualizado com sucesso!")
-                    .status(HttpStatus.OK)
-                    .sendDateTime(Util.getDateTime())
-                    .object(person)
-                    .build();
+            return new PersonDTO(person);
+            
         } catch (EntityNotFoundException e) {
             throw new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + source.getCity().getCityId());
         }
@@ -124,16 +86,11 @@ public class PersonService {
     }
 
     @Transactional
-    public ApiResponseHandler delete(Long personId) {
+    public void delete(Long personId) {
         Optional<Person> personOptional = personRepository.findById(personId);
         if (personOptional.isPresent()) {
             personRepository.deleteById(personOptional.get().getPersonId());
-            return ApiResponseHandler.builder()
-                    .message("Registro deletado com sucesso!")
-                    .status(HttpStatus.OK)
-                    .sendDateTime(Util.getDateTime())
-                    .object(personOptional.get())
-                    .build();
+          
         } else {
             throw new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + personId);
 

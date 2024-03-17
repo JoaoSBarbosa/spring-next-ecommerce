@@ -5,13 +5,11 @@ import br.com.joaosbarbosa.backend.entities.City;
 import br.com.joaosbarbosa.backend.entities.State;
 import br.com.joaosbarbosa.backend.repositories.CityRepository;
 import br.com.joaosbarbosa.backend.repositories.StateRepository;
-import br.com.joaosbarbosa.backend.utils.Util;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
+import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,117 +19,82 @@ import java.util.Optional;
 @Service
 public class CityService {
 
-    @Autowired
-    CityRepository cityRepository;
-    @Autowired
-    StateRepository stateRepository;
+	@Autowired
+	CityRepository cityRepository;
+	@Autowired
+	StateRepository stateRepository;
 
-    @Transactional(readOnly = true)
-    public ApiResponseHandler findById(Long id) {
-        Optional<City> cityOptional = cityRepository.findById(id);
+	@Transactional(readOnly = true)
+	public CityDTO findById(Long id) {
+		Optional<City> cityOptional = cityRepository.findById(id);
 
-        if (!cityOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .message("Cidade não encontrado através do código informado: " + id)
-                    .status(HttpStatus.NOT_FOUND)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .build();
-        }
+		City city = cityOptional.orElseThrow(()-> new ControllerNotFoundException("Nenhum registro foi encontrado com o ID informado (" + id + " 😣). Certifique-se de que o ID está correto e tente novamente. 🫡"));
+		
+		return new CityDTO(city);
 
-        return ApiResponseHandler.builder()
-                .message("Registro de cidade localizado")
-                .object(cityOptional.get())
-                .sendDateTime(Util.getDateTime())
-                .status(HttpStatus.OK)
-                .build();
-    }
+	}
 
+	@Transactional(readOnly = true)
+	public Page<CityDTO> page(Pageable pageable) {
+		Page<City> list = cityRepository.findAll(pageable);
 
-    @Transactional(readOnly = true)
-    public Page<CityDTO> page(Pageable pageable) {
-        Page<City> list = cityRepository.findAll(pageable);
+		if (list.isEmpty()) {
+			return null;
 
-        if (list.isEmpty()) {
-            return null;
+		}
+		return list.map(CityDTO::new);
+	}
 
-        }
-        return list.map(CityDTO::new);
-    }
+	@Transactional
+	public CityDTO insert(CityDTO dto) {
 
-    @Transactional
-    public ApiResponseHandler insert(CityDTO dto) {
+		City city = new City();
+		copyDtoToEntity(dto, city);
+		city = cityRepository.save(city);
 
-        City city = new City();
-        copyDtoToEntity(dto, city);
-        city = cityRepository.save(city);
+		return new CityDTO(city);
+	}
 
-        return ApiResponseHandler.builder()
-                .message("Cidade salva com sucesso!")
-                .status(HttpStatus.OK)
-                .sendDateTime(Util.getDateTime())
-                .object(city)
-                .build();
-    }
+	@Transactional
+	public CityDTO update(CityDTO dto, Long id) {
 
-    @Transactional
-    public ApiResponseHandler update(CityDTO dto, Long id) {
-        Optional<City> cityOptional = cityRepository.findById(id);
+		try {
 
-        if (!cityOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .message("Não existe registros de cidade cadstrado no sistema com o id informado: " + id)
-                    .status(HttpStatus.NOT_FOUND)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .build();
-        }
+			City city = cityRepository.getReferenceById(id);
 
-        City city = cityOptional.get();
+			city.setState(dto.getState());
+			city.setName(dto.getName());
+			city.setUpdateDate(new Date());
 
-        city.setState(dto.getState());
-        city.setName(dto.getName());
-        city.setUpdateDate(new Date());
+			city = cityRepository.save(city);
 
-        city = cityRepository.save(city);
+			return new CityDTO(city);
 
-        return ApiResponseHandler.builder()
-                .message("Cidade atualizada com sucesso!")
-                .status(HttpStatus.OK)
-                .sendDateTime(Util.getDateTime())
-                .object(city)
-                .build();
-    }
+		} catch (EntityNotFoundException e) {
+			throw new ControllerNotFoundException(
+					"Não existe registros de cidade cadstrado no sistema com o id informado: " + id);
+		}
+	}
 
-    @Transactional
-    public ApiResponseHandler delete(Long id) {
-        Optional<City> cityOptional = cityRepository.findById(id);
-        if (!cityOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .message("Não existe registros de cidade cadstrado no sistema com o id informado: " + id)
-                    .status(HttpStatus.NOT_FOUND)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .build();
-        }
+	@Transactional
+	public CityDTO delete(Long id) {
+		Optional<City> cityOptional = cityRepository.findById(id);
+		if (!cityOptional.isPresent()) {
+			throw new ControllerNotFoundException(
+					"Não existe registros de cidade cadstrado no sistema com o id informado: " + id);
+		}
 
-        cityRepository.deleteById(id);
-        return ApiResponseHandler.builder()
-                .message("Cidade '" + cityOptional.get().getName() + "' deletada com sucesso!")
-                .status(HttpStatus.OK)
-                .sendDateTime(Util.getDateTime())
-                .object(null)
-                .build();
+		cityRepository.deleteById(id);
+		return null;
 
-    }
+	}
 
-
-    public void copyDtoToEntity(CityDTO source, City entity) {
-        entity.setCityId(source.getId());
-        entity.setName(source.getName());
-        State state = stateRepository.findById(source.getState().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Estado não encontrado com o ID: " + source.getState().getId()));
-        entity.setState(state);
-        entity.setCreatedDate(new Date());
-    }
+	public void copyDtoToEntity(CityDTO source, City entity) {
+		entity.setCityId(source.getId());
+		entity.setName(source.getName());
+		State state = stateRepository.findById(source.getState().getId()).orElseThrow(
+				() -> new EntityNotFoundException("Estado não encontrado com o ID: " + source.getState().getId()));
+		entity.setState(state);
+		entity.setCreatedDate(new Date());
+	}
 }

@@ -2,7 +2,6 @@ package br.com.joaosbarbosa.backend.controllers;
 
 import br.com.joaosbarbosa.backend.dto.CategoryDTO;
 import br.com.joaosbarbosa.backend.services.CategoryService;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +16,9 @@ public class CategoryController {
     CategoryService categoryService;
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<ApiResponseHandler> getById(@PathVariable Long categoryId) {
-        ApiResponseHandler apiResponseHandler = categoryService.getById(categoryId);
-        return new ResponseEntity<>(apiResponseHandler, apiResponseHandler.getStatus());
+    public ResponseEntity<CategoryDTO> getById(@PathVariable Long categoryId) {
+        CategoryDTO categoryDTO = categoryService.getById(categoryId);
+        return ResponseEntity.ok().body(categoryDTO);
     }
 
     @GetMapping
@@ -29,20 +28,20 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseHandler> insert(@RequestBody CategoryDTO dto) {
-        ApiResponseHandler apiResponseHandler = categoryService.insert(dto);
-        return new ResponseEntity<>(apiResponseHandler, apiResponseHandler.getStatus());
+    public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO dto) {
+        CategoryDTO categoryDTO = categoryService.insert(dto);
+        return ResponseEntity.ok().body(categoryDTO);
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<ApiResponseHandler> update(@PathVariable Long categoryId, @RequestBody CategoryDTO dto) {
-        ApiResponseHandler apiResponseHandler = categoryService.update(dto, categoryId);
-        return new ResponseEntity<>(apiResponseHandler, apiResponseHandler.getStatus());
+    public ResponseEntity<CategoryDTO> update(@PathVariable Long categoryId, @RequestBody CategoryDTO dto) {
+        CategoryDTO categoryDTO = categoryService.update(dto, categoryId);
+        return ResponseEntity.ok().body(categoryDTO);
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<ApiResponseHandler> delete(@PathVariable Long categoryId) {
-        ApiResponseHandler apiResponseHandler = categoryService.delete(categoryId);
-        return new ResponseEntity<>(apiResponseHandler, apiResponseHandler.getStatus());
+    public ResponseEntity<CategoryDTO> delete(@PathVariable Long categoryId) {
+        CategoryDTO categoryDTO = categoryService.delete(categoryId);
+        return ResponseEntity.ok().body(categoryDTO);
     }
 }

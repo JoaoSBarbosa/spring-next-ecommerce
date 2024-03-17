@@ -1,16 +1,16 @@
 package br.com.joaosbarbosa.backend.dto;
-import br.com.joaosbarbosa.backend.entities.City;
 import br.com.joaosbarbosa.backend.entities.State;
-import lombok.Data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-@Data
 public class StateDTO implements Serializable {
-    private Long id;
+	
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long id;
     private String name;
     private String acronym;
     private Date creationDate;
@@ -31,6 +31,38 @@ public class StateDTO implements Serializable {
         creationDate = state.getCreationDate();
         updateDate = state.getUpdateDate();
     }
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getAcronym() {
+		return acronym;
+	}
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
+	}
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+    
+    
 
 
 }

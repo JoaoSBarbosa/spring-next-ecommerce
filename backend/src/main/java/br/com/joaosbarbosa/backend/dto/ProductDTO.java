@@ -3,11 +3,9 @@ package br.com.joaosbarbosa.backend.dto;
 import br.com.joaosbarbosa.backend.entities.Brand;
 import br.com.joaosbarbosa.backend.entities.Category;
 import br.com.joaosbarbosa.backend.entities.Product;
-import lombok.Data;
 
 import java.util.Date;
 
-@Data
 public class ProductDTO {
     private Long descriptionId;
     private String shortDescription;
@@ -54,4 +52,77 @@ public class ProductDTO {
         brand = product.getBrand();
         category = product.getCategory();
     }
+
+	public Long getDescriptionId() {
+		return descriptionId;
+	}
+
+	public void setDescriptionId(Long descriptionId) {
+		this.descriptionId = descriptionId;
+	}
+
+	public String getShortDescription() {
+		return shortDescription;
+	}
+
+	public void setShortDescription(String shortDescription) {
+		this.shortDescription = shortDescription;
+	}
+
+	public String getDetailedDescription() {
+		return detailedDescription;
+	}
+
+	public void setDetailedDescription(String detailedDescription) {
+		this.detailedDescription = detailedDescription;
+	}
+
+	public Double getSaleValue() {
+		return saleValue;
+	}
+
+	public void setSaleValue(Double saleValue) {
+		this.saleValue = saleValue;
+	}
+
+	public Double getValueCost() {
+		return valueCost;
+	}
+
+	public void setValueCost(Double valueCost) {
+		this.valueCost = valueCost;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public Brand getBrand() {
+		return brand;
+	}
+
+	public void setBrand(Brand brand) {
+		this.brand = brand;
+	}
+
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+    
 }

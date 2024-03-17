@@ -1,12 +1,9 @@
 package br.com.joaosbarbosa.backend.controllers;
 import br.com.joaosbarbosa.backend.dto.CityDTO;
 import br.com.joaosbarbosa.backend.services.CityService;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +14,10 @@ public class CityController {
     CityService cityService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponseHandler> findById(@PathVariable Long id){
-        ApiResponseHandler apiResponseHandler = cityService.findById(id);
+    public ResponseEntity<CityDTO> findById(@PathVariable Long id){
+        CityDTO cityDTO = cityService.findById(id);
 
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+        return ResponseEntity.ok().body(cityDTO);
     }
 
     @GetMapping
@@ -30,20 +27,20 @@ public class CityController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseHandler> insert(@RequestBody CityDTO dto){
-        ApiResponseHandler apiResponseHandler = cityService.insert(dto);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public ResponseEntity<CityDTO> insert(@RequestBody CityDTO dto){
+        CityDTO cityDTO = cityService.insert(dto);
+        return ResponseEntity.ok().body(cityDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponseHandler> update(@RequestBody CityDTO dto, @PathVariable Long id){
-        ApiResponseHandler apiResponseHandler = cityService.update(dto, id);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public ResponseEntity<CityDTO> update(@RequestBody CityDTO dto, @PathVariable Long id){
+        CityDTO cityDTO = cityService.update(dto, id);
+        return ResponseEntity.ok().body(cityDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponseHandler> delete(@PathVariable Long id){
-        ApiResponseHandler apiResponseHandler = cityService.delete(id);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public ResponseEntity<CityDTO> delete(@PathVariable Long id){
+        CityDTO cityDTO = cityService.delete(id);
+        return ResponseEntity.ok().body(cityDTO);
     }
 }
