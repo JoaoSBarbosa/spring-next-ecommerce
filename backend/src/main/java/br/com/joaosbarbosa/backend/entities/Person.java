@@ -2,19 +2,19 @@ package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
 @Data
 @Table(name = TablesName.TABLE_PESSOA)
 public class Person implements Serializable {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -28,8 +28,10 @@ public class Person implements Serializable {
     @Column(name = "sobrenome")
     private String lastName;
 
+    @CPF
     private String cpf;
 
+    @Email
     private String email;
 
     @Column(name = "senha")

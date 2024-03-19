@@ -4,16 +4,16 @@ import br.com.joaosbarbosa.backend.utils.TablesName;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
 @Table(name = TablesName.TABLE_PRODUTOS)
 public class Product implements Serializable {
 
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +41,9 @@ public class Product implements Serializable {
     @JoinColumn(name = "pro_id_categoria")
     private Category category;
 
+    @OneToMany(mappedBy = "product")
+    private List<ProductImages> productImages = new ArrayList<>();
+    
     public Product(){}
 
     public Product(
