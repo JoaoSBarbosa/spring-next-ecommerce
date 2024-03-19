@@ -3,6 +3,7 @@ package br.com.joaosbarbosa.backend.dto;
 import java.io.Serializable;
 
 import br.com.joaosbarbosa.backend.entities.Product;
+import br.com.joaosbarbosa.backend.entities.ProductImages;
 
 
 public class ProductImagesDTO implements Serializable{
@@ -25,7 +26,7 @@ public class ProductImagesDTO implements Serializable{
 		this.product = product;
 	}
 
-	public ProductImagesDTO(ProductImagesDTO entity) {
+	public ProductImagesDTO(ProductImages entity) {
 	
 		idImage = entity.getIdImage();
 		name = entity.getName();

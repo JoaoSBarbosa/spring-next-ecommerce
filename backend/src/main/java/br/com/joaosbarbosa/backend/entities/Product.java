@@ -139,6 +139,12 @@ public class Product implements Serializable {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
+
+	public List<ProductImages> getProductImages() {
+		return productImages;
+	}
+
+
     
     
 }
