@@ -11,13 +11,16 @@ import br.com.joaosbarbosa.backend.repositories.CategoryRepository;
 import br.com.joaosbarbosa.backend.repositories.ProductImagesRepository;
 import br.com.joaosbarbosa.backend.repositories.ProductRepository;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
+import com.dropbox.core.DbxException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -32,6 +35,7 @@ public class ProductService {
 	CategoryRepository categoryRepository;
 	@Autowired
 	ProductImagesRepository productImagesRepository;
+
 
 	@Transactional(readOnly = true)
 	public ProductDTO getById(Long productId) {
@@ -52,12 +56,35 @@ public class ProductService {
 	}
 
 	@Transactional
-	public ProductDTO insert(ProductDTO source) {
+	public ProductDTO insert(ProductDTO source) throws IOException, DbxException {
+		// 1. Instanciamos um objeto Product
 		Product product = new Product();
+		// 2. Copiamos os dados do DTO para a entidade Product
 		copyDtoToEntity(source, product, false);
+		// 3. Salvamos a entidade Product no banco de dados
 		product = productRepository.save(product);
+
+	
+
 		return new ProductDTO(product, product.getProductImages());
 	}
+//		Product product = new Product();
+//
+//		for(ProductImagesDTO productImagesDTO: source.getProductImages()){
+//			MultipartFile file = productImagesDTO.getImageFile();
+//			if(file != null){
+//				String dropboxPath = dropboxService.uploadImage(file);
+//				ProductImages productImages = new ProductImages();
+//				productImages.setUriImage(dropboxPath);
+//				productImages.setProduct(product);
+//				product.getProductImages().add(productImages);
+//			}
+//		}
+//
+//		copyDtoToEntity(source, product, false);
+//		product = productRepository.save(product);
+//		return new ProductDTO(product, product.getProductImages());
+//	}
 
 	@Transactional
 	public ProductDTO update(ProductDTO source, Long productId) {
@@ -121,8 +148,10 @@ public class ProductService {
 		entity.getProductImages().clear();
 
 		for (ProductImagesDTO productImagesDTO : source.getProductImages()) {
-
-			ProductImages productImage = productImagesRepository.getReferenceById(productImagesDTO.getIdImage());
+			ProductImages productImage = new ProductImages();
+			productImage.setName(productImagesDTO.getName());
+			productImage.setUriImage(productImagesDTO.getUriImage());
+			productImage.setProduct(entity);
 			entity.getProductImages().add(productImage);
 		}
 

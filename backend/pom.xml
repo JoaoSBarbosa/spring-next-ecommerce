@@ -49,6 +49,11 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.dropbox.core</groupId>
+			<artifactId>dropbox-core-sdk</artifactId>
+			<version>6.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

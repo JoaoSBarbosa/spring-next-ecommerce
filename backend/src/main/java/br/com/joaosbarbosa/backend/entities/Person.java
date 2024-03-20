@@ -7,6 +7,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.validator.constraints.br.CPF;
 
@@ -54,6 +56,13 @@ public class Person implements Serializable {
     @ManyToOne
     @JoinColumn(name = "id_cidade")
     private City city;
+
+	@ManyToMany
+	@JoinTable(
+			name = "tb_permissao_pessoa",
+			joinColumns = @JoinColumn(name ="id_pessoa"),
+			inverseJoinColumns = @JoinColumn(name = "id_permissao"))
+	Set<Permission> personPermission = new HashSet<>();
 
     public Person() {
     }

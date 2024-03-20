@@ -2,11 +2,14 @@ package br.com.joaosbarbosa.backend.controllers;
 
 import br.com.joaosbarbosa.backend.dto.ProductDTO;
 import br.com.joaosbarbosa.backend.services.ProductService;
+import com.dropbox.core.DbxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/products")
@@ -28,7 +31,7 @@ public class ProductController {
 	}
 
 	@PostMapping
-	public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO source) {
+	public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO source) throws IOException, DbxException {
 		ProductDTO productDTO = productService.insert(source);
 		return ResponseEntity.ok().body(productDTO);
 	}

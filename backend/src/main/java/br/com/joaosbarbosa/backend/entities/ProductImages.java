@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "tb_imagem_produto")
 public class ProductImages implements Serializable {
-
 	private static final long serialVersionUID = 1L;
 
 	@Id
