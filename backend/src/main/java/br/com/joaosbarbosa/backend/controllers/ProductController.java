@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -30,10 +31,25 @@ public class ProductController {
 		return ResponseEntity.ok().body(productDTOS);
 	}
 
-	@PostMapping
-	public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO source) throws IOException, DbxException {
-		ProductDTO productDTO = productService.insert(source);
-		return ResponseEntity.ok().body(productDTO);
+//	@PostMapping
+//	public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO source) throws IOException, DbxException {
+//		ProductDTO productDTO = productService.insert(source);
+//		return ResponseEntity.ok().body(productDTO);
+//	}
+@PostMapping
+public ResponseEntity<ProductDTO> insert(
+		@RequestPart("product") ProductDTO source,
+		@RequestPart("file")MultipartFile file
+) throws IOException, DbxException {
+	ProductDTO productDTO = productService.insert(source, file);
+	return ResponseEntity.ok().body(productDTO);
+}
+	@PostMapping("/upload")
+	public ResponseEntity<String> upload(
+			@RequestPart("file")MultipartFile file
+	) throws IOException, DbxException {
+		String file1 = productService.upload(file);
+		return ResponseEntity.ok().body(file1);
 	}
 
 	@PutMapping("/{productId}")

@@ -2,6 +2,7 @@ package br.com.joaosbarbosa.backend.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +30,7 @@ public class ProductImages implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name="id_produto")
+	@JsonIgnore
 	private Product product;
 	
 	public ProductImages() {

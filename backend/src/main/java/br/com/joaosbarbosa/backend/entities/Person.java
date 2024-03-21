@@ -60,8 +60,8 @@ public class Person implements Serializable {
 	@ManyToMany
 	@JoinTable(
 			name = "tb_permissao_pessoa",
-			joinColumns = @JoinColumn(name ="id_pessoa"),
-			inverseJoinColumns = @JoinColumn(name = "id_permissao"))
+			joinColumns = @JoinColumn(name ="pep_id_pessoa"),
+			inverseJoinColumns = @JoinColumn(name = "pep_id_permissao"))
 	Set<Permission> personPermission = new HashSet<>();
 
     public Person() {

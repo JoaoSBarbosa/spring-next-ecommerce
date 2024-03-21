@@ -14,6 +14,7 @@ public class Permission implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_permissao")
     private Long permissionId;
 
     @Column(name = "nome_permissao")
