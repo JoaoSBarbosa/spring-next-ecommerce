@@ -10,10 +10,15 @@ import java.util.Date;
 @Data
 public class CityNotStateDTO implements Serializable {
 
-    private Long id;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long id;
     private String name;
     private Date createdDate;
     private Date updateDate;
+    
     public CityNotStateDTO(){}
 
     public CityNotStateDTO(Long id, String name, Date createdDate, Date updateDate, State state) {

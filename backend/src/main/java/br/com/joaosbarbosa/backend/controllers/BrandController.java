@@ -1,9 +1,7 @@
 package br.com.joaosbarbosa.backend.controllers;
 
 import br.com.joaosbarbosa.backend.dto.BrandDTO;
-import br.com.joaosbarbosa.backend.entities.Brand;
 import br.com.joaosbarbosa.backend.services.BrandService;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +16,10 @@ public class BrandController {
     BrandService brandService;
 
     @GetMapping("/{brand_id}")
-    public ResponseEntity<ApiResponseHandler> getById(@PathVariable  Long brand_id){
-        ApiResponseHandler apiResponseHandler = brandService.getById(brand_id);
+    public ResponseEntity<BrandDTO> getById(@PathVariable  Long brand_id){
+    	BrandDTO brandDTO = brandService.getById(brand_id);
 
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+        return ResponseEntity.ok().body(brandDTO);
     }
 
     @GetMapping
@@ -32,20 +30,19 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseHandler> insert(@RequestBody BrandDTO dto){
-        ApiResponseHandler apiResponseHandler = brandService.insert(dto);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public ResponseEntity<BrandDTO> insert(@RequestBody BrandDTO dto){
+        BrandDTO brandDTO = brandService.insert(dto);
+        return ResponseEntity.ok().body(brandDTO);
     }
 
     @PutMapping("/{brand_id}")
-    public ResponseEntity<ApiResponseHandler> update(@RequestBody BrandDTO dto, @PathVariable Long brand_id){
-        ApiResponseHandler apiResponseHandler = brandService.update(dto, brand_id);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public ResponseEntity<BrandDTO> update(@RequestBody BrandDTO dto, @PathVariable Long brand_id){
+        BrandDTO brandDTO = brandService.update(dto, brand_id);
+        return ResponseEntity.ok().body(brandDTO);
     }
 
     @DeleteMapping("/{brand_id}")
-    public ResponseEntity<ApiResponseHandler> delete(@PathVariable Long brand_id){
-        ApiResponseHandler apiResponseHandler = brandService.delete(brand_id);
-        return new ResponseEntity<>(apiResponseHandler,apiResponseHandler.getStatus());
+    public void delete(@PathVariable Long brand_id){
+       brandService.delete(brand_id);
     }
 }

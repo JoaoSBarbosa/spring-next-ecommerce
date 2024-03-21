@@ -2,18 +2,19 @@ package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
 import jakarta.persistence.*;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
 
 @Entity
 @Table(name = TablesName.TABLE_CATEGORIAS)
 public class Category implements Serializable {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_categoria")
     private Long categoryId;
@@ -38,4 +39,38 @@ public class Category implements Serializable {
         this.name = name;
         this.creationDate = creationDate;
     }
+
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+    
+    
 }

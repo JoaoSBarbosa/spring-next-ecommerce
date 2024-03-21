@@ -1,14 +1,12 @@
 package br.com.joaosbarbosa.backend.services;
-
 import br.com.joaosbarbosa.backend.dto.StateDTO;
 import br.com.joaosbarbosa.backend.entities.State;
 import br.com.joaosbarbosa.backend.repositories.StateRepository;
-import br.com.joaosbarbosa.backend.utils.Util;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
+import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,22 +20,14 @@ public class StateService {
     StateRepository stateRepository;
 
     @Transactional(readOnly = true)
-    public ApiResponseHandler findById(Long id) {
+    public StateDTO findById(Long id) {
         Optional<State> stateOptional = stateRepository.findById(id);
         if (!stateOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .message("Não existe registro de estado com o id informando")
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
+           
+        	throw new ControllerNotFoundException("Não existe registro de estado com o id informando");
+
         }
-        return ApiResponseHandler.builder()
-                .message("Estado localizado")
-                .sendDateTime(Util.getDateTime())
-                .object(stateOptional.get())
-                .status(HttpStatus.OK)
-                .build();
+        return new StateDTO(stateOptional.get());
 
     }
 
@@ -53,38 +43,24 @@ public class StateService {
     }
 
     @Transactional
-    public ApiResponseHandler insert(StateDTO dto) {
+    public StateDTO insert(StateDTO dto) {
         Optional<State> stateOptional = stateRepository.findByName(dto.getName());
         if (stateOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .message("O estado " + dto.getName() + " já está cadstrado no sistema")
-                    .sendDateTime(Util.getDateTime())
-                    .status(HttpStatus.BAD_REQUEST)
-                    .object(null)
-                    .build();
+
+        	throw new ControllerNotFoundException("O estado" + dto.getName() + " já está cadstrado no sistema");
         }
         State state = new State();
         copyData(dto, state);
         state = stateRepository.save(state);
 
-        return ApiResponseHandler.builder()
-                .message("O estado " + dto.getName() + " registrado com sucesso")
-                .sendDateTime(Util.getDateTime())
-                .status(HttpStatus.OK)
-                .object(state)
-                .build();
+        return new StateDTO(state);
     }
 
     @Transactional
-    public ApiResponseHandler update(StateDTO dto, Long id) {
+    public StateDTO update(StateDTO dto, Long id) {
         Optional<State> stateOptional = stateRepository.findById(id);
         if (!stateOptional.isPresent()) {
-            return ApiResponseHandler.builder()
-                    .message("Não existe nenhum registro de estado com o id informando" + id + ". Por favor, tente novamente!")
-                    .status(HttpStatus.BAD_REQUEST)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .build();
+           throw new ControllerNotFoundException("Não existe nenhum registro de estado com o id informando" + id + ". Por favor, tente novamente!");
         }
         State state = stateOptional.get();
 
@@ -93,36 +69,21 @@ public class StateService {
         state.setUpdateDate(new Date());
 
         state = stateRepository.save(state);
-        return ApiResponseHandler.builder()
-                .message("Estado" + state.getName() + " atualizado com sucesso!")
-                .status(HttpStatus.OK)
-                .sendDateTime(Util.getDateTime())
-                .object(state)
-                .build();
+        return new StateDTO(state);
 
 
     }
 
     @Transactional
-    public ApiResponseHandler delete(Long id) {
+    public StateDTO delete(Long id) {
         State stateOptional = stateRepository.findById(id).orElse(null);
 
         if (stateOptional != null) {
             stateRepository.delete(stateOptional);
+            return null;
 
-            return ApiResponseHandler.builder()
-                    .message("Estado " + stateOptional.getName() + " deletado com sucesso!")
-                    .status(HttpStatus.OK)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .build();
         } else {
-            return ApiResponseHandler.builder()
-                    .message("Não existe nenhum registro de estado com o id informado " + id + ". Por favor, tente novamente!")
-                    .status(HttpStatus.BAD_REQUEST)
-                    .sendDateTime(Util.getDateTime())
-                    .object(null)
-                    .build();
+           throw new ControllerNotFoundException("Não existe nenhum registro de estado com o id informado " + id + ". Por favor, tente novamente!");
         }
     }
 

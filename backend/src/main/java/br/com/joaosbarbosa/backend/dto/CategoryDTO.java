@@ -1,14 +1,17 @@
 package br.com.joaosbarbosa.backend.dto;
 
 import br.com.joaosbarbosa.backend.entities.Category;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@Data
+
 public class CategoryDTO implements Serializable {
-    private Long categoryId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long categoryId;
     private String name;
     private Date creationDate;
     private Date updateDate;
@@ -28,4 +31,42 @@ public class CategoryDTO implements Serializable {
         creationDate = entity.getCreationDate();
         updateDate = entity.getUpdateDate();
     }
+
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+    
+    
 }

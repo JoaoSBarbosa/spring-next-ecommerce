@@ -2,7 +2,6 @@ package br.com.joaosbarbosa.backend.controllers;
 
 import br.com.joaosbarbosa.backend.dto.PersonDTO;
 import br.com.joaosbarbosa.backend.services.PersonService;
-import br.com.joaosbarbosa.backend.utils.api.ApiResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +15,9 @@ public class PersonController {
     PersonService personService;
 
     @GetMapping("/{personId}")
-    public ResponseEntity<ApiResponseHandler> findById(@PathVariable Long personId) {
-        ApiResponseHandler apiResponseHandler = personService.getById(personId);
-        return new ResponseEntity<>(apiResponseHandler, apiResponseHandler.getStatus());
+    public ResponseEntity<PersonDTO> findById(@PathVariable Long personId) {
+    	PersonDTO personDTO = personService.getById(personId);
+        return  ResponseEntity.ok().body(personDTO);
     }
 
     @GetMapping
@@ -28,14 +27,14 @@ public class PersonController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponseHandler> insert(@RequestBody PersonDTO personDTO) {
-        ApiResponseHandler apiResponseHandler = personService.insert(personDTO);
-        return new ResponseEntity<>(apiResponseHandler, apiResponseHandler.getStatus());
+    public ResponseEntity<PersonDTO> insert(@RequestBody PersonDTO personDTO) {
+    	personDTO = personService.insert(personDTO);
+        return ResponseEntity.ok().body(personDTO);
     }
 
     @PutMapping("/{personId}")
-    public ResponseEntity<ApiResponseHandler> update(@PathVariable Long personId, @RequestBody PersonDTO source) {
-        ApiResponseHandler apiResponseHandler = personService.update(source, personId);
-        return new ResponseEntity<>(apiResponseHandler, apiResponseHandler.getStatus());
+    public ResponseEntity<PersonDTO> update(@PathVariable Long personId, @RequestBody PersonDTO source) {
+    	source = personService.update(source, personId);
+        return  ResponseEntity.ok().body(source);
     }
 }

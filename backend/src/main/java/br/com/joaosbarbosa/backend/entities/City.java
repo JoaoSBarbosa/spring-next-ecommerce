@@ -1,7 +1,6 @@
 package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,7 +12,12 @@ import java.util.Date;
 @Table(name = TablesName.TABLE_CIDADES)
 public class City implements Serializable {
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cidade")
     private Long cityId;

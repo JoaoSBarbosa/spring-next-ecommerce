@@ -16,10 +16,10 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(ControllerNotFoundException.class)
     public ResponseEntity<StanderError> entityNotFound(ControllerNotFoundException exception,HttpServletRequest request){
         StanderError error = new StanderError();
+        
+        error.setError("recurso não encontrado! 🤔🤷‍♂️");
         error.setTimestamp(Instant.now());
         error.setStatus(HttpStatus.NOT_FOUND.value());
-
-        error.setError("recurso não encontrado! 🤔🤷‍♂️");
         error.setMessage(exception.getMessage());
         error.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);

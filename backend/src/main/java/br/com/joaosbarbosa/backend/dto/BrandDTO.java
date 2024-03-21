@@ -1,18 +1,16 @@
 package br.com.joaosbarbosa.backend.dto;
-
 import br.com.joaosbarbosa.backend.entities.Brand;
-import br.com.joaosbarbosa.backend.entities.Product;
-import lombok.Data;
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-@Data
+
 public class BrandDTO implements Serializable {
 
-    private Long brandId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long brandId;
     private String brandName;
     private Date creationdDate;
     private Date updateDate;
@@ -32,10 +30,52 @@ public class BrandDTO implements Serializable {
         updateDate = entity.getUpdateDate();
     }
 
+
+	public Long getBrandId() {
+		return brandId;
+	}
+
+
+	public void setBrandId(Long brandId) {
+		this.brandId = brandId;
+	}
+
+
+	public String getBrandName() {
+		return brandName;
+	}
+
+
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
+
+
+	public Date getCreationdDate() {
+		return creationdDate;
+	}
+
+
+	public void setCreationdDate(Date creationdDate) {
+		this.creationdDate = creationdDate;
+	}
+
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
 //    public BrandDTO(Brand entity, List<ProductDTO> products) {
 //        this(entity);
 //
 //        products.forEach(productDTO -> this.products.add(new ProductDTO(productDTO)));
 //
 //    }
+    
+    
 }

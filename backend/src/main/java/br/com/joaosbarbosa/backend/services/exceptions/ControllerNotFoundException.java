@@ -1,7 +1,12 @@
 package br.com.joaosbarbosa.backend.services.exceptions;
 
 public class ControllerNotFoundException extends RuntimeException{
-    public ControllerNotFoundException(String message){
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ControllerNotFoundException(String message){
         super(message);
     }
 }
