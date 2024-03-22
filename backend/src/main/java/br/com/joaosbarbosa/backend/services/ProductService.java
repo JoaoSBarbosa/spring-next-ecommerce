@@ -46,7 +46,7 @@ public class ProductService {
         if (!productOptional.isPresent()) {
             return null;
         }
-        return new ProductDTO(productOptional.get());
+        return new ProductDTO(productOptional.get(), productOptional.get().getProductImages());
     }
 
     @Transactional(readOnly = true)
@@ -63,29 +63,13 @@ public class ProductService {
         // 1. Instanciamos um objeto Product
         Product product = new Product();
         // 2. Copiamos os dados do DTO para a entidade Product
-        copyDtoToEntity(source, product, false);
+        copyDtoToEntity(source, product, file, false);
         // 3. Salvamos a entidade Product no banco de dados
-        product = productRepository.save(product);
-
-        // 4. Salvar a imagem no diretório local
-        if (file != null && !file.isEmpty()) {
-            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            String uploadDir = "D:\\Workspace\\WorkspaceJava\\upload\\wolfEcommerce";
-            String filePath = uploadDir + "/" + fileName;
-            FileUploadUtil.saveFile(uploadDir, fileName, file);
-
-            // 5. Salvar a URL e o nome da imagem na entidade ProductImages
-            ProductImages productImage = new ProductImages();
-            productImage.setName(fileName);
-            productImage.setUriImage(filePath);
-            productImage.setProduct(product);
-            product.getProductImages().add(productImage);
-        }
 
         return new ProductDTO(product, product.getProductImages());
     }
 
-    private void copyDtoToEntity(ProductDTO source, Product entity, Boolean isUpdate) {
+    private void copyDtoToEntity(ProductDTO source, Product entity, MultipartFile file, Boolean isUpdate) throws IOException {
         if (isUpdate) {
             entity.setUpdateDate(new Date());
         } else {
@@ -114,6 +98,23 @@ public class ProductService {
         }
         if (source.getValueCost() != null) {
             entity.setValueCost(source.getValueCost());
+        }
+        entity = productRepository.save(entity);
+        // 4. Salvar a imagem no diretório local
+        if (file != null && !file.isEmpty()) {
+            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+            String uploadDir = "D:\\Workspace\\WorkspaceJava\\upload\\wolfEcommerce";
+            String filePath = uploadDir + "/" + fileName;
+            FileUploadUtil.saveFile(uploadDir, fileName, file);
+
+            // 5. Salvar a URL e o nome da imagem na entidade ProductImages
+            ProductImages productImage = new ProductImages();
+            productImage.setName(fileName);
+            productImage.setUriImage(filePath);
+            productImage.setProduct(entity);
+            entity.getProductImages().add(productImage);
+
+            productImagesRepository.save(productImage);
         }
     }
 
@@ -193,7 +194,7 @@ public class ProductService {
         }
         try {
             Product product = productRepository.getReferenceById(productId);
-            copyDtoToEntity(source, product, true);
+//            copyDtoToEntity(source, product, true);
             product = productRepository.save(product);
 
             return new ProductDTO(product);

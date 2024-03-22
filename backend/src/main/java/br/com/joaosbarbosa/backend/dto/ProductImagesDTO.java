@@ -32,7 +32,7 @@ public class ProductImagesDTO implements Serializable{
 		idImage = entity.getIdImage();
 		name = entity.getName();
 		uriImage = entity.getUriImage();
-		product = entity.getProduct();
+//		product = entity.getProduct();
 	}
 	public Long getIdImage() {
 		return idImage;
