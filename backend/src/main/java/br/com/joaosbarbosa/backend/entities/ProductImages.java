@@ -34,7 +34,6 @@ public class ProductImages implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updateDate;
 
-	@JsonIgnore // Ignora a serialização desta propriedade
 	@ManyToOne
 	@JoinColumn(name="id_produto")
 	private Product product;

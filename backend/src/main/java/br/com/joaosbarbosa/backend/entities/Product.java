@@ -1,6 +1,7 @@
 package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,6 +46,7 @@ public class Product implements Serializable {
     @ManyToOne
     @JoinColumn(name = "pro_id_categoria")
     private Category category;
+
 
 //	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 //	private List<ProductImages> images = new ArrayList<>();

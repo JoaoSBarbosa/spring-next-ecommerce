@@ -5,6 +5,7 @@ import br.com.joaosbarbosa.backend.entities.Product;
 import br.com.joaosbarbosa.backend.entities.ProductImages;
 import br.com.joaosbarbosa.backend.repositories.ProductImagesRepository;
 import br.com.joaosbarbosa.backend.repositories.ProductRepository;
+import br.com.joaosbarbosa.backend.services.dropboxApiServices.ApiDropboxServiceUpload;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 
 @Service
@@ -31,6 +28,8 @@ public class ProductImagesService {
 
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    private ApiDropboxServiceUpload apiDropboxServiceUpload;
 
     @Transactional(readOnly = true)
     public ProductImagesDTO getById(Long id) {
@@ -59,13 +58,16 @@ public class ProductImagesService {
             productImages.setCreationDate(new Date());
             productImages.setProduct(product);
 
-            if(!file.isEmpty()){
+            if (!file.isEmpty()) {
                 byte[] bytes = file.getBytes(); // pegando o arquivo em byte
-                String imageName = String.valueOf("_"+product.getShortDescription())+"_" + file.getOriginalFilename();
-                //definindo o caminho da imagem
-                Path path = Paths.get(UPLOAD_DIR + imageName);
-                //gravar a imagem no caminho
-                Files.write(path, bytes);
+                String productName = product.getShortDescription();
+                String imageName = String.valueOf("_" + productName) + "_" + file.getOriginalFilename();
+
+                String path = apiDropboxServiceUpload.uploadImage(productName, bytes, imageName);
+//                //definindo o caminho da imagem
+//                Path path = Paths.get(UPLOAD_DIR + imageName);
+//                //gravar a imagem no caminho
+//                Files.write(path, bytes);
 
                 productImages.setUriImage(String.valueOf(path));
                 productImages.setName(imageName);

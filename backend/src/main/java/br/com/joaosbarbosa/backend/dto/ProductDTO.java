@@ -4,6 +4,7 @@ import br.com.joaosbarbosa.backend.entities.Brand;
 import br.com.joaosbarbosa.backend.entities.Category;
 import br.com.joaosbarbosa.backend.entities.Product;
 import br.com.joaosbarbosa.backend.entities.ProductImages;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +29,7 @@ public class ProductDTO {
     private Date updateDate;
     private Brand brand;
     private Category category;
-    
+
 //    private List<ProductImagesDTO> productImages = new ArrayList<>();
 
 //	private List<ProductImages> images = new ArrayList<>();
