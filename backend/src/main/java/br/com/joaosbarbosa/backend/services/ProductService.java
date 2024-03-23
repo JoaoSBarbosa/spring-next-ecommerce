@@ -46,14 +46,16 @@ public class ProductService {
         if (!productOptional.isPresent()) {
             return null;
         }
-        return new ProductDTO(productOptional.get(), productOptional.get().getProductImages());
+//        return new ProductDTO(productOptional.get(), productOptional.get().getProductImages());
+        return new ProductDTO(productOptional.get());
     }
 
     @Transactional(readOnly = true)
     public Page<ProductDTO> page(Pageable pageable) {
         Page<Product> products = productRepository.findAll(pageable);
         if (!products.isEmpty()) {
-            return products.map(product -> new ProductDTO(product, product.getProductImages()));
+//            return products.map(product -> new ProductDTO(product, product.getProductImages()));
+            return products.map(ProductDTO::new);
         }
         return null;
     }
@@ -66,7 +68,8 @@ public class ProductService {
         copyDtoToEntity(source, product, file, false);
         // 3. Salvamos a entidade Product no banco de dados
 
-        return new ProductDTO(product, product.getProductImages());
+//        return new ProductDTO(product, product.getProductImages());
+        return new ProductDTO(product);
     }
 
     private void copyDtoToEntity(ProductDTO source, Product entity, MultipartFile file, Boolean isUpdate) throws IOException {
@@ -112,7 +115,7 @@ public class ProductService {
             productImage.setName(fileName);
             productImage.setUriImage(filePath);
             productImage.setProduct(entity);
-            entity.getProductImages().add(productImage);
+//            entity.getProductImages().add(productImage);
 
             productImagesRepository.save(productImage);
         }
