@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class DropboxService {
     @Autowired
@@ -28,6 +30,18 @@ public class DropboxService {
         return entity;
     }
 
+    @Transactional
+    public Dropbox update(Long id, Dropbox dropbox) {
+        Optional<Dropbox> dropboxOptional = repository.findById(id);
+        if (!dropboxOptional.isPresent()) {
+            return null;
+        }
+        Dropbox entity = dropboxOptional.get();
+        entity.setAccessToken(dropbox.getAccessToken());
+        entity = repository.save(entity);
+        return entity;
+    }
+
     @Transactional(readOnly = true)
     public Dropbox getById(Long id) {
         return repository.findById(id).orElseThrow(() -> new ControllerNotFoundException("Não localizado com id informando: " + id));
@@ -41,6 +55,7 @@ public class DropboxService {
         }
         return null;
     }
+
     @Transactional
     public Dropbox refreshToken(Dropbox dropbox) {
         Dropbox entity = new Dropbox();
@@ -54,4 +69,6 @@ public class DropboxService {
 
         return entity;
     }
+
+
 }

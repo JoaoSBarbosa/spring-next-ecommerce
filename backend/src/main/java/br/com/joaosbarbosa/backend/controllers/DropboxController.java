@@ -19,6 +19,11 @@ public class DropboxController {
         dropbox = dropboxService.insert(dropbox);
         return ResponseEntity.ok().body(dropbox);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Dropbox> upgrad(@PathVariable Long id, @RequestBody Dropbox dropbox){
+        dropbox = dropboxService.update(id, dropbox);
+        return ResponseEntity.ok().body(dropbox);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Dropbox> getById(@PathVariable Long id) {
