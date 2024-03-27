@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 @Service
@@ -54,7 +57,6 @@ public class ProductImagesService {
                     .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado com ID: " + productId));
 
             ProductImages productImages = new ProductImages();
-
             productImages.setCreationDate(new Date());
             productImages.setProduct(product);
 
@@ -63,22 +65,26 @@ public class ProductImagesService {
                 String productName = product.getShortDescription();
                 String imageName = String.valueOf("_" + productName) + "_" + file.getOriginalFilename();
 
-                String path = apiDropboxServiceUpload.uploadImage(productName, bytes, imageName);
-//                //definindo o caminho da imagem
-//                Path path = Paths.get(UPLOAD_DIR + imageName);
-//                //gravar a imagem no caminho
-//                Files.write(path, bytes);
+                //Verifica se a pasta do produto existe, senão, cria
+                String productFolderPath = Paths.get(UPLOAD_DIR, productName).toString();
+                Path localPath = Paths.get(productFolderPath);
 
-                productImages.setUriImage(String.valueOf(path));
+                if(!Files.exists(localPath)){
+                    Files.createDirectories(localPath);
+                }
+                //definindo caminho no dropbox
+                String uriImageDropbox = apiDropboxServiceUpload.uploadImage(productName, bytes, imageName);
+
+                Path imagePath = Paths.get(productFolderPath,imageName);
+                Files.write(imagePath, bytes);
+
+                productImages.setUriImage(imagePath.toString());
+                productImages.setUriImageDropbox(uriImageDropbox);
                 productImages.setName(imageName);
 
             }
             productImages = productImagesRepository.saveAndFlush(productImages);
 
-//            // Forçar o carregamento da coleção de imagens antes de salvar o produto
-//            product.getImages().size();
-//
-//            product.getImages().add(productImages);
             productRepository.saveAndFlush(product);
 
             return new ProductImagesDTO(productImages);
@@ -88,6 +94,23 @@ public class ProductImagesService {
             throw new RuntimeException(e);
         }
     }
+
+    public void deleteImage(Long imageId){
+        ProductImages productImages = productImagesRepository.findById(imageId).orElseThrow(()-> new ControllerNotFoundException("Imagem do produto não encontrada com ID:" + imageId));
+
+        if(productImages.getUriImageDropbox() != null)  {
+            apiDropboxServiceUpload.deleteImage(productImages.getUriImageDropbox());
+        }
+
+        try{
+            Files.deleteIfExists(Paths.get(productImages.getUriImage()));
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao excluir imagem local: " + e.getMessage(), e);
+        }
+        productImagesRepository.deleteById(imageId);
+
+    }
+
 
 //    @Transactional
 //    public ProductImagesDTO insert(Long productId, MultipartFile file) {

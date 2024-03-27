@@ -26,6 +26,9 @@ public class ProductImages implements Serializable {
 	@Column(name="url_imagem")
 	private String uriImage;
 
+	@Column(name="url_imagem_dropbox")
+	private String uriImageDropbox;
+
 	@Column(name = "data_criacao")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationDate;
@@ -41,13 +44,14 @@ public class ProductImages implements Serializable {
 	public ProductImages() {
 	}
 
-	public ProductImages(Long idImage, String name, String uriImage, Date creationDate, Date updateDate, Product product) {
+	public ProductImages(Long idImage,String uriImageDropbox, String name, String uriImage, Date creationDate, Date updateDate, Product product) {
 		this.idImage = idImage;
 		this.name = name;
 		this.uriImage = uriImage;
 		this.creationDate = creationDate;
 		this.updateDate = updateDate;
 		this.product = product;
+		this.uriImageDropbox = uriImageDropbox;
 	}
 
 

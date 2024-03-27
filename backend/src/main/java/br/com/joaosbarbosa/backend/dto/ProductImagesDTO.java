@@ -23,13 +23,13 @@ public class ProductImagesDTO implements Serializable{
 	private String uriImage;
 	private Product product;
 	private MultipartFile imageFile;
-
+	private String uriImageDropbox;
 	private Date creationDate;
 
 	private Date updateDate;
 	public ProductImagesDTO() {}
 
-	public ProductImagesDTO(Long idImage, String name, String uriImage, Product product, MultipartFile imageFile, Date updateDate, Date creationDate) {
+	public ProductImagesDTO(Long idImage,String uriImageDropbox, String name, String uriImage, Product product, MultipartFile imageFile, Date updateDate, Date creationDate) {
 		this.idImage = idImage;
 		this.name = name;
 		this.uriImage = uriImage;
@@ -37,6 +37,7 @@ public class ProductImagesDTO implements Serializable{
 		this.imageFile = imageFile;
 		this.updateDate = updateDate;
 		this.creationDate = creationDate;
+		this.uriImageDropbox = uriImageDropbox;
 	}
 
 	public ProductImagesDTO(ProductImages entity) {
@@ -47,6 +48,7 @@ public class ProductImagesDTO implements Serializable{
 		product = entity.getProduct();
 		updateDate = entity.getUpdateDate();
 		creationDate = entity.getCreationDate();
+		uriImageDropbox = entity.getUriImageDropbox();
 
 	}
 

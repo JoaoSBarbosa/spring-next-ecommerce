@@ -23,7 +23,7 @@ public class productImagesController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductImagesDTO>> page(Pageable pageable){
+    public ResponseEntity<Page<ProductImagesDTO>> page(Pageable pageable) {
         Page<ProductImagesDTO> page = productImagesService.page(pageable);
         return ResponseEntity.ok().body(page);
     }
@@ -31,8 +31,14 @@ public class productImagesController {
     @PostMapping("/{productId}")
     public ResponseEntity<ProductImagesDTO> insert(
             @PathVariable Long productId,
-            @RequestParam("file") MultipartFile file){
-        ProductImagesDTO productImagesDTO = productImagesService.insert(productId,file);
+            @RequestParam("file") MultipartFile file) {
+        ProductImagesDTO productImagesDTO = productImagesService.insert(productId, file);
         return ResponseEntity.ok().body(productImagesDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        productImagesService.deleteImage(id);
+        return null;
     }
 }
