@@ -9,7 +9,7 @@ public class FileUploadUtil {
 
     public static void saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException{
         File directory = new File(uploadDir);
-        System.out.println("CHEGOU EM saveFile");
+
         if(!directory.exists()){
             directory.mkdirs();
         }

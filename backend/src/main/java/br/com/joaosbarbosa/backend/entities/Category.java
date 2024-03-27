@@ -2,6 +2,8 @@ package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
 import jakarta.persistence.*;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -10,9 +12,7 @@ import java.util.Date;
 @Table(name = TablesName.TABLE_CATEGORIAS)
 public class Category implements Serializable {
 
-    /**
-	 * 
-	 */
+	@Serial
 	private static final long serialVersionUID = 1L;
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +21,10 @@ public class Category implements Serializable {
     @Column(name = "nome_categoria")
     private String name;
     @Column(name = "data_criacao")
+	@Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
     @Column(name = "data_atualizacao")
+	@Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
 
     public Category() {

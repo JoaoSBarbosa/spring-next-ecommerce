@@ -1,7 +1,10 @@
 package br.com.joaosbarbosa.backend.entities;
 
 import br.com.joaosbarbosa.backend.utils.TablesName;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -10,11 +13,12 @@ import java.util.Date;
 import java.util.List;
 
 
+@Setter
+@Getter
 @Entity
 @Table(name = TablesName.TABLE_PRODUTOS)
 public class Product implements Serializable {
 
-	private static final long serialVersionUID = 1L;
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pro_id_produto")
@@ -28,8 +32,10 @@ public class Product implements Serializable {
     @Column(name = "pro_valor_custo")
     private Double valueCost;
     @Column(name = "pro_data_criacao")
+	@Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
     @Column(name = "pro_data_atualizacao")
+	@Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
 
     // Muitos-para-um -> Muitos produtos associados a uma unica marca
@@ -41,8 +47,9 @@ public class Product implements Serializable {
     @JoinColumn(name = "pro_id_categoria")
     private Category category;
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductImages> productImages = new ArrayList<>();
+
+//	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+//	private List<ProductImages> images = new ArrayList<>();
     
     public Product(){}
 
@@ -68,81 +75,10 @@ public class Product implements Serializable {
         this.category = category;
     }
 
-	public Long getProductId() {
-		return productId;
-	}
 
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-
-	public String getShortDescription() {
-		return shortDescription;
-	}
-
-	public void setShortDescription(String shortDescription) {
-		this.shortDescription = shortDescription;
-	}
-
-	public String getDetailedDescription() {
-		return detailedDescription;
-	}
-
-	public void setDetailedDescription(String detailedDescription) {
-		this.detailedDescription = detailedDescription;
-	}
-
-	public Double getSaleValue() {
-		return saleValue;
-	}
-
-	public void setSaleValue(Double saleValue) {
-		this.saleValue = saleValue;
-	}
-
-	public Double getValueCost() {
-		return valueCost;
-	}
-
-	public void setValueCost(Double valueCost) {
-		this.valueCost = valueCost;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	public Date getUpdateDate() {
-		return updateDate;
-	}
-
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-
-	public Brand getBrand() {
-		return brand;
-	}
-
-	public void setBrand(Brand brand) {
-		this.brand = brand;
-	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-	public List<ProductImages> getProductImages() {
-		return productImages;
-	}
+	//	public List<ProductImages> getProductImages() {
+//		return productImages;
+//	}
 
 
     

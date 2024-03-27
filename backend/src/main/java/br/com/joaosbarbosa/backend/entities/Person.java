@@ -48,9 +48,11 @@ public class Person implements Serializable {
     private String zipCode;
 
     @Column(name = "data_criacao")
+	@Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
 
     @Column(name = "data_atualizacao")
+	@Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
 
     @ManyToOne
