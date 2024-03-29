@@ -10,6 +10,7 @@ import br.com.joaosbarbosa.backend.repositories.BrandRepository;
 import br.com.joaosbarbosa.backend.repositories.CategoryRepository;
 import br.com.joaosbarbosa.backend.repositories.ProductImagesRepository;
 import br.com.joaosbarbosa.backend.repositories.ProductRepository;
+import br.com.joaosbarbosa.backend.services.dropboxApiServices.ApiDropboxServiceUpload;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
 import br.com.joaosbarbosa.backend.utils.FileUploadUtil;
 import com.dropbox.core.DbxException;
@@ -23,12 +24,16 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 public class ProductService {
+    private static final String UPLOAD_DIR = "D:\\Workspace\\WorkspaceJava\\upload\\wolfEcommerce";
 
     @Autowired
     ProductRepository productRepository;
@@ -38,7 +43,8 @@ public class ProductService {
     CategoryRepository categoryRepository;
     @Autowired
     ProductImagesRepository productImagesRepository;
-
+    @Autowired
+    private ApiDropboxServiceUpload apiDropboxServiceUpload;
 
     @Transactional(readOnly = true)
     public ProductDTO getById(Long productId) {
@@ -62,13 +68,40 @@ public class ProductService {
 
     @Transactional
     public ProductDTO insert(ProductDTO source, MultipartFile file) throws IOException, DbxException {
-        // 1. Instanciamos um objeto Product
         Product product = new Product();
-        // 2. Copiamos os dados do DTO para a entidade Product
         copyDtoToEntity(source, product, file, false);
-        // 3. Salvamos a entidade Product no banco de dados
 
-//        return new ProductDTO(product, product.getProductImages());
+        product = productRepository.save(product);
+
+        if (file != null) {
+            byte[] bytes = file.getBytes(); // pegando o arquivo em byte
+
+            String productName = source.getShortDescription();
+            String imageName = String.valueOf("_" + productName) + "_" + file.getOriginalFilename();
+
+            ProductImages productImages = new ProductImages();
+            //Verifica se a pasta do produto existe, senão, cria
+            String productFolderPath = Paths.get(UPLOAD_DIR, productName).toString();
+            Path localPath = Paths.get(productFolderPath);
+
+            if(!Files.exists(localPath)){
+                Files.createDirectories(localPath);
+            }
+            //definindo caminho no dropbox
+            String uriImageDropbox = apiDropboxServiceUpload.uploadImage(productName, bytes, imageName);
+
+            Path imagePath = Paths.get(productFolderPath,imageName);
+            Files.write(imagePath, bytes);
+
+            productImages.setUriImage(imagePath.toString());
+            productImages.setProduct(product);
+            productImages.setCreationDate(new Date());
+
+            productImages.setUriImageDropbox(uriImageDropbox);
+            productImages.setName(imageName);
+
+            productImagesRepository.saveAndFlush(productImages);
+        }
         return new ProductDTO(product);
     }
 
@@ -102,90 +135,13 @@ public class ProductService {
         if (source.getValueCost() != null) {
             entity.setValueCost(source.getValueCost());
         }
-        entity = productRepository.save(entity);
-        // 4. Salvar a imagem no diretório local
-        if (file != null && !file.isEmpty()) {
-            String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            String uploadDir = "D:\\Workspace\\WorkspaceJava\\upload\\wolfEcommerce";
-            String filePath = uploadDir + "/" + fileName;
-            FileUploadUtil.saveFile(uploadDir, fileName, file);
+        System.out.println("TESTE O VALOR DE getShortDescription FORA DE file É:  "+source.getShortDescription());
 
-            // 5. Salvar a URL e o nome da imagem na entidade ProductImages
-            ProductImages productImage = new ProductImages();
-            productImage.setName(fileName);
-            productImage.setUriImage(filePath);
-            productImage.setProduct(entity);
-//            entity.getProductImages().add(productImage);
 
-            productImagesRepository.save(productImage);
-        }
+
     }
 
-    //	@Transactional
-//	public ProductDTO insert(ProductDTO source, MultipartFile file) throws IOException, DbxException {
-//		// 1. Instanciamos um objeto Product
-//		Product product = new Product();
-//		// 2. Copiamos os dados do DTO para a entidade Product
-//		copyDtoToEntity(source, product, false);
-//		// 3. Salvamos a entidade Product no banco de dados
-//		product = productRepository.save(product);
-//
-//		String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-//		String uploadDir = "D:\\Workspace\\WorkspaceJava\\upload\\wolfEcommerce";
-//		String filePath = uploadDir + "/"+fileName;
-//
-//		FileUploadUtil.saveFile(uploadDir, fileName, file);
-//
-//		// 5. Salvar a URL e o nome da imagem na entidade ProductImages
-//		ProductImages productImage = new ProductImages();
-//		productImage.setName(fileName);
-//		productImage.setUriImage(filePath);
-//		productImage.setProduct(product);
-//		productImagesRepository.save(productImage);
-//
-//        return new ProductDTO(product, product.getProductImages());
-//	}
-//
-//
-//	private void copyDtoToEntity(ProductDTO source, Product entity, Boolean isUpdate) {
-//
-//		if (isUpdate) {
-//			entity.setUpdateDate(new Date());
-//		} else {
-//			entity.setCreationDate(new Date());
-//		}
-//		if (source.getBrand() != null) {
-//			Brand brand = brandRepository.findById(source.getBrand().getBrandId())
-//					.orElseThrow(() -> new ControllerNotFoundException(
-//							"Nenhuma marca encontrada com o ID informado: " + source.getBrand().getBrandId()));
-//			entity.setBrand(brand);
-//		}
-//		if (source.getCategory() != null) {
-//			Category category = categoryRepository.findById(source.getCategory().getCategoryId())
-//					.orElseThrow(() -> new ControllerNotFoundException(
-//							"Categoria não encontrada com o ID informado: " + source.getCategory().getCategoryId()));
-//			entity.setCategory(category);
-//		}
-//		if (source.getSaleValue() != null)
-//			entity.setSaleValue(source.getSaleValue());
-//		if (source.getShortDescription() != null)
-//			entity.setShortDescription(source.getShortDescription());
-//		if (source.getDetailedDescription() != null)
-//			entity.setDetailedDescription(source.getDetailedDescription());
-//		if (source.getValueCost() != null)
-//			entity.setValueCost(source.getValueCost());
-//
-//		entity.getProductImages().clear();
-//
-//		for (ProductImagesDTO productImagesDTO : source.getProductImages()) {
-//			ProductImages productImage = new ProductImages();
-//			productImage.setName(productImagesDTO.getName());
-//			productImage.setUriImage(productImagesDTO.getUriImage());
-//			productImage.setProduct(entity);
-//			entity.getProductImages().add(productImage);
-//		}
-//
-//	}
+
     @Transactional
     public ProductDTO update(ProductDTO source, Long productId) {
         Product productDescriptions = productRepository.getByShortAndDetailsDescription(source.getShortDescription(),

@@ -1,9 +1,12 @@
 package br.com.joaosbarbosa.backend.services;
 
+import br.com.joaosbarbosa.backend.dto.PermissionDTO;
 import br.com.joaosbarbosa.backend.dto.PersonDTO;
 import br.com.joaosbarbosa.backend.entities.City;
+import br.com.joaosbarbosa.backend.entities.Permission;
 import br.com.joaosbarbosa.backend.entities.Person;
 import br.com.joaosbarbosa.backend.repositories.CityRepository;
+import br.com.joaosbarbosa.backend.repositories.PermissionRepository;
 import br.com.joaosbarbosa.backend.repositories.PersonRepository;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +28,11 @@ public class PersonService {
 
     @Autowired
     PersonRepository personRepository;
+    @Autowired
+    PermissionRepository permissionRepository;
+    @Autowired
+    CityRepository cityRepository;
+
 
     @Transactional(readOnly = true)
     public PersonDTO getById(Long personId) {
@@ -33,7 +41,7 @@ public class PersonService {
             return null;
         }
         String stringBuilder = personOptional.get().getFirstName() + " " + personOptional.get().getLastName();
-        return new PersonDTO(personOptional.get());
+        return new PersonDTO(personOptional.get(), personOptional.get().getPermissions());
     }
 
     @Transactional(readOnly = true)
@@ -42,26 +50,29 @@ public class PersonService {
 
         if (page.isEmpty()) return null;
 
-        return page.map(PersonDTO::new);
+        return page.map(person -> new PersonDTO(person, person.getPermissions()));
 
     }
+
 
     @Transactional
     public PersonDTO insert(PersonDTO source) {
         List<String> missingFields = findMissingRequiredFields(source);
-
-        if (!missingFields.isEmpty()) {
-            String message = "Os seguintes campos obrigatórios estão vazios: " + String.join(",", missingFields);
-            return null;
-        }
+        System.out.println(source);
+//        if (!missingFields.isEmpty()) {
+//            String message = "Os seguintes campos obrigatórios estão vazios: " + String.join(",", missingFields);
+//            return null;
+//        }
         if (!validateCPF(source.getCpf())) {
-            return null;
+            throw new ControllerNotFoundException("cpf inválido: " + source.getCpf());
+
+//            return null;
         }
         Person person = new Person();
         copyDtoToEntity(source, person, false);
         person = personRepository.save(person);
 
-        return new PersonDTO(person);
+        return new PersonDTO(person, person.getPermissions());
 
     }
 
@@ -78,7 +89,7 @@ public class PersonService {
             person = personRepository.save(person);
 
             return new PersonDTO(person);
-            
+
         } catch (EntityNotFoundException e) {
             throw new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + source.getCity().getCityId());
         }
@@ -90,7 +101,7 @@ public class PersonService {
         Optional<Person> personOptional = personRepository.findById(personId);
         if (personOptional.isPresent()) {
             personRepository.deleteById(personOptional.get().getPersonId());
-          
+
         } else {
             throw new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + personId);
 
@@ -111,8 +122,6 @@ public class PersonService {
         return missingFields;
     }
 
-    @Autowired
-    CityRepository cityRepository;
 
     private void copyDtoToEntity(PersonDTO source, Person entity, Boolean isUpdate) {
         entity.setAddress(source.getAddress());
@@ -129,6 +138,15 @@ public class PersonService {
         City city = cityRepository.findById(source.getCity().getCityId()).orElseThrow(() -> new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + source.getCity().getCityId()));
         entity.setCity(city);
 
+        entity.getPermissions().clear();
+
+        for (PermissionDTO dto : source.getPermissions()) {
+
+            Permission permission = permissionRepository.getReferenceById(dto.getPermissionId());
+
+            entity.getPermissions().add(permission);
+        }
+        System.out.println(entity);
     }
 
 }

@@ -1,15 +1,15 @@
 package br.com.joaosbarbosa.backend.dto;
 import br.com.joaosbarbosa.backend.entities.City;
+import br.com.joaosbarbosa.backend.entities.Permission;
 import br.com.joaosbarbosa.backend.entities.Person;
-import java.io.Serializable;
-import java.util.Date;
+import lombok.Data;
 
+import java.io.Serializable;
+import java.util.*;
+
+@Data
 public class PersonDTO implements Serializable {
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Long personId;
     private String cpf;
     private String firstName;
@@ -21,7 +21,7 @@ public class PersonDTO implements Serializable {
     private String zipCode;
     private Date creationDate;
     private City city;
-
+	List<PermissionDTO> permissions = new ArrayList<>();
     public PersonDTO() {
     }
 
@@ -62,93 +62,28 @@ public class PersonDTO implements Serializable {
         city = entity.getCity();
     }
 
-	public Long getPersonId() {
-		return personId;
+	public PersonDTO(Person entity, Set<Permission> permissions) {
+		this(entity);
+
+		permissions.forEach(permission -> this.permissions.add(new PermissionDTO(permission)));
+
 	}
 
-	public void setPersonId(Long personId) {
-		this.personId = personId;
-	}
-
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public String getDistrict() {
-		return district;
-	}
-
-	public void setDistrict(String district) {
-		this.district = district;
-	}
-
-	public String getZipCode() {
-		return zipCode;
-	}
-
-	public void setZipCode(String zipCode) {
-		this.zipCode = zipCode;
-	}
-
-	public Date getCreationDate() {
-		return creationDate;
-	}
-
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	public City getCity() {
-		return city;
-	}
-
-	public void setCity(City city) {
-		this.city = city;
-	}
-    
-    
+    @Override
+    public String toString() {
+        return "PersonDTO{" +
+                "personId=" + personId +
+                ", cpf='" + cpf + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", address='" + address + '\'' +
+                ", district='" + district + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", creationDate=" + creationDate +
+                ", city=" + city +
+                ", permissions=" + permissions +
+                '}';
+    }
 }

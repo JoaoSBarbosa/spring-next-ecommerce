@@ -10,4 +10,6 @@ public abstract class TablesName {
     public static final String TABLE_PRODUTOS = "\"tb_produto\"";
 
     public static final String TABLE_PESSOA = "\"tb_pessoa\"";
+
+    public static final String PERMISSAO_PESSOA = "\"tb_permissao_pessoa\"";
 }
