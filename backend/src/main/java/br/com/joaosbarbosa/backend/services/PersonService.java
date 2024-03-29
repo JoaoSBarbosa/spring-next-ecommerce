@@ -55,7 +55,7 @@ public class PersonService {
     @Transactional
     public PersonDTO insert(PersonDTO source) {
         List<String> missingFields = findMissingRequiredFields(source);
-        System.out.println(source);
+
         if (!missingFields.isEmpty()) {
             throw new ControllerMissingRequiredFieldsException("Os seguintes campos obrigatórios estão vazios: "+ String.join(",", missingFields));
         }
