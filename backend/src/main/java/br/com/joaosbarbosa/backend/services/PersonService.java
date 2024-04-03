@@ -1,10 +1,14 @@
 package br.com.joaosbarbosa.backend.services;
 
+import br.com.joaosbarbosa.backend.dto.PermissionDTO;
 import br.com.joaosbarbosa.backend.dto.PersonDTO;
 import br.com.joaosbarbosa.backend.entities.City;
+import br.com.joaosbarbosa.backend.entities.Permission;
 import br.com.joaosbarbosa.backend.entities.Person;
 import br.com.joaosbarbosa.backend.repositories.CityRepository;
+import br.com.joaosbarbosa.backend.repositories.PermissionRepository;
 import br.com.joaosbarbosa.backend.repositories.PersonRepository;
+import br.com.joaosbarbosa.backend.services.exceptions.ControllerMissingRequiredFieldsException;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +29,16 @@ public class PersonService {
 
     @Autowired
     PersonRepository personRepository;
+    @Autowired
+    PermissionRepository permissionRepository;
+    @Autowired
+    CityRepository cityRepository;
+
 
     @Transactional(readOnly = true)
     public PersonDTO getById(Long personId) {
         Optional<Person> personOptional = personRepository.findById(personId);
-        if (!personOptional.isPresent()) {
-            return null;
-        }
-        String stringBuilder = personOptional.get().getFirstName() + " " + personOptional.get().getLastName();
-        return new PersonDTO(personOptional.get());
+        return personOptional.map(person -> new PersonDTO(person, person.getPermissions())).orElse(null);
     }
 
     @Transactional(readOnly = true)
@@ -42,33 +47,35 @@ public class PersonService {
 
         if (page.isEmpty()) return null;
 
-        return page.map(PersonDTO::new);
+        return page.map(person -> new PersonDTO(person, person.getPermissions()));
 
     }
+
 
     @Transactional
     public PersonDTO insert(PersonDTO source) {
         List<String> missingFields = findMissingRequiredFields(source);
 
         if (!missingFields.isEmpty()) {
-            String message = "Os seguintes campos obrigatórios estão vazios: " + String.join(",", missingFields);
-            return null;
+            throw new ControllerMissingRequiredFieldsException("Os seguintes campos obrigatórios estão vazios: "+ String.join(",", missingFields));
         }
         if (!validateCPF(source.getCpf())) {
-            return null;
+            throw new ControllerNotFoundException("cpf inválido: " + source.getCpf());
         }
+
         Person person = new Person();
         copyDtoToEntity(source, person, false);
         person = personRepository.save(person);
 
-        return new PersonDTO(person);
+        return new PersonDTO(person, person.getPermissions());
 
     }
 
     @Transactional
     public PersonDTO update(PersonDTO source, Long personId) {
 
-        if (!validateCPF(source.getCpf())) {
+
+        if (source.getCpf() != null && !validateCPF(source.getCpf())) {
             return null;
         }
         try {
@@ -77,8 +84,8 @@ public class PersonService {
             copyDtoToEntity(source, person, true);
             person = personRepository.save(person);
 
-            return new PersonDTO(person);
-            
+            return new PersonDTO(person, person.getPermissions());
+
         } catch (EntityNotFoundException e) {
             throw new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + source.getCity().getCityId());
         }
@@ -90,7 +97,7 @@ public class PersonService {
         Optional<Person> personOptional = personRepository.findById(personId);
         if (personOptional.isPresent()) {
             personRepository.deleteById(personOptional.get().getPersonId());
-          
+
         } else {
             throw new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + personId);
 
@@ -111,24 +118,30 @@ public class PersonService {
         return missingFields;
     }
 
-    @Autowired
-    CityRepository cityRepository;
-
     private void copyDtoToEntity(PersonDTO source, Person entity, Boolean isUpdate) {
-        entity.setAddress(source.getAddress());
-        entity.setDistrict(source.getDistrict());
-        entity.setCpf(source.getCpf());
-        entity.setPassword(source.getPassword());
-        entity.setEmail(source.getEmail());
+        if (source.getAddress() != null) entity.setAddress(source.getAddress());
+        if (source.getDistrict() != null) entity.setDistrict(source.getDistrict());
+        if (source.getCpf() != null) entity.setCpf(source.getCpf());
+        if (source.getPassword() != null) entity.setPassword(source.getPassword());
+        if (source.getEmail() != null) entity.setEmail(source.getEmail());
         if (isUpdate) entity.setUpdateDate(new Date());
         if (!isUpdate) entity.setCreationDate(new Date());
-        entity.setFirstName(source.getFirstName());
-        entity.setLastName(source.getLastName());
-        entity.setZipCode(source.getZipCode());
+        if (source.getFirstName() != null) entity.setFirstName(source.getFirstName());
+        if (source.getLastName() != null) entity.setLastName(source.getLastName());
+        if (source.getZipCode() != null) entity.setZipCode(source.getZipCode());
+        if (source.getCity() != null) {
+            City city = cityRepository.findById(source.getCity().getCityId()).orElseThrow(() -> new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + source.getCity().getCityId()));
+            entity.setCity(city);
+        }
 
-        City city = cityRepository.findById(source.getCity().getCityId()).orElseThrow(() -> new ControllerNotFoundException("Nenhuma cidade foi encontrada com o ID fornecido: " + source.getCity().getCityId()));
-        entity.setCity(city);
+        entity.getPermissions().clear();
 
+        for (PermissionDTO dto : source.getPermissions()) {
+
+            Permission permission = permissionRepository.getReferenceById(dto.getPermissionId());
+
+            entity.getPermissions().add(permission);
+        }
     }
 
 }
