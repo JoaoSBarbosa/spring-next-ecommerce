@@ -35,6 +35,67 @@ public class PersonManagementService {
         }
     }
 
+    //    public String changePassword(Person person) {
+//        try {
+//            System.out.println(person);
+//            Person entity = personRepository.findByEmailAndPasswordRecoveryCode(person.getEmail(), person.getPasswordRecoveryCode());
+//
+//            if (entity == null) return "Não existe registro no sistema com esse e-mail ou código informado";
+//
+//            // data em milisegundos
+//            Date difference = new Date(new Date().getTime() - entity.getCodeSendDate().getTime());
+//            if (difference.getTime() / 1000 >= 900) {
+//
+//                System.out.println("CHGEOU NO IF DE difference.getTime() / 1000 >= 900");
+//                entity.setPassword(person.getPassword());
+//                entity.setPasswordRecoveryCode(null);
+//                personRepository.saveAndFlush(entity);
+//
+//                emailService.sendEmail(entity.getEmail(), "Alteração de senha", "Tempo expirado. Solicite um novo codigo");
+//                return "Tempo expirado. Solicite um novo codigo";
+//
+//            } else {
+//                System.out.println("NÃO ENTRUPU NO IF");
+//
+//                emailService.sendEmail(entity.getEmail(), "Alteração de senha", "Tempo expirado. Solicite um novo codigo");
+//                return "Tempo expirado. Solicite um novo codigo";
+//            }
+//
+//
+//        } catch (Exception e) {
+//            System.out.println("Ocorreu um erro: " + e);
+//            return "Ocorreu um erro: " + e;
+//        }
+//    }
+    public String changePassword(Person person) {
+        try {
+            System.out.println(person);
+            Person entity = personRepository.findByEmailAndPasswordRecoveryCode(person.getEmail(), person.getPasswordRecoveryCode());
+
+            if (entity == null) {
+                return "Não existe registro no sistema com esse e-mail ou código informado";
+            }
+
+            // data em milisegundos
+            Date difference = new Date(new Date().getTime() - entity.getCodeSendDate().getTime());
+            if (difference.getTime() / 1000 >= 900) {
+                System.out.println("CHGEOU NO IF DE difference.getTime() / 1000 >= 900");
+                emailService.sendEmail(entity.getEmail(), "Alteração de senha", "Tempo expirado. Solicite um novo código");
+                return "Tempo expirado. Solicite um novo código";
+            } else {
+                System.out.println("NÃO ENTROU NO IF");
+                entity.setPassword(person.getPassword());
+                entity.setPasswordRecoveryCode(null);
+                personRepository.saveAndFlush(entity);
+                emailService.sendEmailChangePassword(entity.getEmail(), entity.getFirstName(), "Senha alterada com sucesso!");
+                return "Senha alterada com sucesso!";
+            }
+        } catch (Exception e) {
+            System.out.println("Ocorreu um erro: " + e);
+            return "Ocorreu um erro: " + e;
+        }
+    }
+
     public String generateRecoveryCode(Long id) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyyHHmmssmm");
         return dateFormat.format(new Date()) + id;
