@@ -37,8 +37,16 @@ public class Person implements Serializable {
     @Column(name = "senha")
     private String password;
 
+    @Column(name = "codigo_recuperacaoo_senha")
+    private String passwordRecoveryCode;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "data_envio_codigo")
+    private Date codeSendDate;
+
     @Column(name = "endereco")
     private String address;
+
     @Column(name = "bairro")
     private String district;
 

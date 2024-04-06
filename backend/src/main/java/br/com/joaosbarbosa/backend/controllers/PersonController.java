@@ -37,4 +37,10 @@ public class PersonController {
     	source = personService.update(source, personId);
         return  ResponseEntity.ok().body(source);
     }
+
+    @DeleteMapping("/{personId}")
+    public ResponseEntity<Void> delete(@PathVariable Long personId) {
+        personService.delete(personId);
+        return null;
+    }
 }

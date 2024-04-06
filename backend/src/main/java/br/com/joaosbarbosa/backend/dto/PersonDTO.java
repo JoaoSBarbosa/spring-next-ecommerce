@@ -2,6 +2,9 @@ package br.com.joaosbarbosa.backend.dto;
 import br.com.joaosbarbosa.backend.entities.City;
 import br.com.joaosbarbosa.backend.entities.Permission;
 import br.com.joaosbarbosa.backend.entities.Person;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -20,6 +23,9 @@ public class PersonDTO implements Serializable {
     private String district;
     private String zipCode;
     private Date creationDate;
+    private String passwordRecoveryCode;
+    private Date codeSendDate;
+
     private City city;
 	List<PermissionDTO> permissions = new ArrayList<>();
     public PersonDTO() {
@@ -34,7 +40,11 @@ public class PersonDTO implements Serializable {
             String password,
             String address,
             String district,
-            String zipCode, Date creationDate, City city) {
+            String zipCode,
+            Date creationDate,
+            Date codeSendDate,
+            String passwordRecoveryCode,
+            City city) {
         this.personId = personId;
         this.cpf = cpf;
         this.firstName = firstName;
@@ -45,6 +55,8 @@ public class PersonDTO implements Serializable {
         this.address = address;
         this.zipCode = zipCode;
         this.creationDate = creationDate;
+        this.codeSendDate = codeSendDate;
+        this.passwordRecoveryCode = passwordRecoveryCode;
         this.city = city;
     }
 
@@ -60,6 +72,8 @@ public class PersonDTO implements Serializable {
         zipCode = entity.getZipCode();
         creationDate = entity.getCreationDate();
         city = entity.getCity();
+        codeSendDate = entity.getCodeSendDate();
+        passwordRecoveryCode = entity.getPasswordRecoveryCode();
     }
 
 	public PersonDTO(Person entity, Set<Permission> permissions) {
@@ -69,21 +83,4 @@ public class PersonDTO implements Serializable {
 
 	}
 
-    @Override
-    public String toString() {
-        return "PersonDTO{" +
-                "personId=" + personId +
-                ", cpf='" + cpf + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", address='" + address + '\'' +
-                ", district='" + district + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", creationDate=" + creationDate +
-                ", city=" + city +
-                ", permissions=" + permissions +
-                '}';
-    }
 }

@@ -21,11 +21,6 @@ public class PersonClientRequestDTO {
     private Date creationDate;
     private City city;
 
-    public PersonDTO convertDtoToEntity(PersonClientRequestDTO dto){
-        Person person = new Person();
-        BeanUtils.copyProperties(dto, person);
-        return new PersonDTO(person);
-    }
 
 
     public PersonClientRequestDTO(){}

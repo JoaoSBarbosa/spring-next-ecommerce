@@ -5,6 +5,7 @@ import br.com.joaosbarbosa.backend.dto.PersonClientRequestDTO;
 import br.com.joaosbarbosa.backend.dto.PersonDTO;
 import br.com.joaosbarbosa.backend.entities.Permission;
 import br.com.joaosbarbosa.backend.entities.Person;
+import br.com.joaosbarbosa.backend.modal.email.Email;
 import br.com.joaosbarbosa.backend.repositories.PermissionRepository;
 import br.com.joaosbarbosa.backend.repositories.PersonRepository;
 import br.com.joaosbarbosa.backend.services.exceptions.ControllerNotFoundException;
@@ -24,10 +25,9 @@ public class PersonClientService {
     @Autowired
     PermissionRepository permissionRepository;
 
+    @Autowired EmailService emailService;
     @Transactional
     public PersonDTO registrationClient(PersonClientRequestDTO personClientRequestDTO) {
-
-        System.out.println(personClientRequestDTO);
 
         Set<Permission> permissionList = new HashSet<>();
 
@@ -39,8 +39,10 @@ public class PersonClientService {
         person.setPermissions(permissionList);
         person.setCreationDate(new Date());
 
+        String title = "Cadastro realizado!";
         person = personRepository.save(person);
-        System.out.println(person);
+
+        emailService.sendEmailMime(person.getEmail(), person.getFirstName(), title);
         return new PersonDTO(person, person.getPermissions());
 
     }
