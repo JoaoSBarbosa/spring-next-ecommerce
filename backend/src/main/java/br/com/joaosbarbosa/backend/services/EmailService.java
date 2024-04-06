@@ -1,5 +1,6 @@
 package br.com.joaosbarbosa.backend.services;
 
+import br.com.joaosbarbosa.backend.modal.EmailTemplateLoader;
 import br.com.joaosbarbosa.backend.modal.email.Email;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -18,6 +21,8 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private EmailTemplateLoader emailTemplateLoader;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -116,6 +121,7 @@ public class EmailService {
         }
     }
 
+
     public String sendEmailChangePassword(String destination, String recipientName, String title) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -123,80 +129,12 @@ public class EmailService {
 
             helper.setFrom(from);
             helper.setTo(destination);
-            helper.setSubject(title);
+            helper.setSubject("Senha Alterada");
 
-            // Construa o corpo do email em HTML
-            String htmlContent = "<!DOCTYPE html>\n" +
-                    "<html lang=\"pt-br\">\n" +
-                    "<head>\n" +
-                    "    <meta charset=\"UTF-8\">\n" +
-                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                    "    <title>Senha Alterada</title>\n" +
-                    "    <style>\n" +
-                    "        body {\n" +
-                    "            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\n" +
-                    "            background-color: #f5f5f5;\n" +
-                    "            margin: 0;\n" +
-                    "            padding: 0;\n" +
-                    "        }\n" +
-                    "        .container {\n" +
-                    "            max-width: 600px;\n" +
-                    "            margin: 20px auto;\n" +
-                    "            padding: 30px;\n" +
-                    "            background-color: #ffffff;\n" +
-                    "            border-radius: 10px;\n" +
-                    "            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);\n" +
-                    "        }\n" +
-                    "        h1 {\n" +
-                    "            color: #333333;\n" +
-                    "            text-align: center;\n" +
-                    "            margin-bottom: 30px;\n" +
-                    "        }\n" +
-                    "        p {\n" +
-                    "            color: #666666;\n" +
-                    "            line-height: 1.5;\n" +
-                    "            margin-bottom: 20px;\n" +
-                    "        }\n" +
-                    "        .logo {\n" +
-                    "            text-align: center;\n" +
-                    "            margin-bottom: 30px;\n" +
-                    "        }\n" +
-                    "        .logo img {\n" +
-                    "            max-width: 200px;\n" +
-                    "            max-height: 80px;\n" +
-                    "        }\n" +
-                    "        .btn {\n" +
-                    "            display: inline-block;\n" +
-                    "            background-color: #ff6347;\n" +
-                    "            color: #ffffff;\n" +
-                    "            text-decoration: none;\n" +
-                    "            padding: 12px 24px;\n" +
-                    "            border-radius: 5px;\n" +
-                    "            transition: background-color 0.3s ease;\n" +
-                    "        }\n" +
-                    "        .btn:hover {\n" +
-                    "            background-color: #ff4d2e;\n" +
-                    "        }\n" +
-                    "    </style>\n" +
-                    "</head>\n" +
-                    "<body>\n" +
-                    "    <div class=\"container\">\n" +
-                    "        <div class=\"logo\">\n" +
-                    "            <img src=\"cid:logo\" alt=\"Logo\">\n" +
-                    "        </div>\n" +
-                    "        <h1>Senha Alterada</h1>\n" +
-                    "        <p>Olá, " + recipientName + "!</p>\n" +
-                    "        <p>Informamos que sua senha foi alterada com sucesso em nosso sistema.</p>\n" +
-                    "        <p>Se você não solicitou essa alteração, recomendamos que entre em contato conosco imediatamente para proteger sua conta.</p>\n" +
-                    "        <p>Caso tenha sido você quem solicitou a alteração, pode ignorar esta mensagem.</p>\n" +
-                    "        <p>Aproveite para explorar nossas novidades e promoções:</p>\n" +
-                    "        <a href=\"#\" class=\"btn\">Ver Promoções</a>\n" +
-                    "        <p>Atenciosamente,<br>Equipe Wolf E-Commerce</p>\n" +
-                    "        <img src=\"cid:image\" style=\"max-width: 100%; height: auto;\" alt=\"Imagem\">\n" +
-                    "    </div>\n" +
-                    "</body>\n" +
-                    "</html>";
+            Map<String, Object> model = new HashMap<>();
+            model.put("recipientName", recipientName);
 
+            String htmlContent = emailTemplateLoader.getTemplate("password-changed", model);
             helper.setText(htmlContent, true);
 
             // Anexar a imagem do logo
@@ -213,63 +151,67 @@ public class EmailService {
         }
     }
 
+    public String sendEmailExpiradCode(String destination, String recipientName, String title) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(from);
+            helper.setTo(destination);
+            helper.setSubject("Código expirado");
 
 
-//    public String sendEmailMime(String destination, String recipientName, String title) {
-//        try {
-//            MimeMessage message = javaMailSender.createMimeMessage();
-//            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//
-//            helper.setFrom(from);
-//            helper.setTo(destination);
-//            helper.setSubject(title);
-//
-//            // Construa o corpo do email em HTML
-//            String htmlContent = "<html>" +
-//                    "<head>" +
-//                    "<style>" +
-//                    "body {" +
-//                    "font-family: Arial, sans-serif;" +
-//                    "background-color: #f4f4f4;" +
-//                    "margin: 0;" +
-//                    "padding: 0;" +
-//                    "}" +
-//                    ".container {" +
-//                    "max-width: 600px;" +
-//                    "margin: 20px auto;" +
-//                    "padding: 20px;" +
-//                    "background-color: #fff;" +
-//                    "border-radius: 10px;" +
-//                    "box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);" +
-//                    "}" +
-//                    "h1 {" +
-//                    "color: #333;" +
-//                    "}" +
-//                    "p {" +
-//                    "color: #666;" +
-//                    "}" +
-//                    "</style>" +
-//                    "</head>" +
-//                    "<body>" +
-//                    "<div class='container'>" +
-//                    "<h1>Seja bem-vindo, " + recipientName + "!</h1>" +
-//                    "<p>Seu cadastro foi realizado com sucesso. Em breve você recebera sua senha de acesso pelo e-mail.</p>" +
-//                    "<img src='cid:image' style='max-width: 100%; height: auto;' />" +
-//                    "</div>" +
-//                    "</body>" +
-//                    "</html>";
-//
-//            helper.setText(htmlContent, true);
-//
-//            helper.addInline("image", new ClassPathResource("static/images/wellcome.jpeg"), "image/jpeg");
-//            javaMailSender.send(message);
-//
-//            System.out.println("EMAIL ENVIADO PARA: " + destination);
-//            return "Email enviado com sucesso!";
-//        } catch (Exception e) {
-//            System.out.println("EMAIL não ENVIADO. ERRO: " + e);
-//            return "Erro ao enviar o email: " + e;
-//        }
-//    }
+            // Carregar o template Freemarker
+            Map<String, Object> model = new HashMap<>();
+            model.put("recipientName", recipientName);
+            model.put("recipientName", recipientName);
 
+            String htmlContent = emailTemplateLoader.getTemplate("expired-code", model);
+            helper.setText(htmlContent, true);
+
+            // Anexar a imagem do logo
+            helper.addInline("logo", new ClassPathResource("static/images/barbosa.png"), "image/png");
+            helper.addInline("image", new ClassPathResource("static/images/404.jpeg"), "image/jpeg");
+
+            javaMailSender.send(message);
+
+            System.out.println("EMAIL ENVIADO PARA: " + destination);
+            return "Email enviado com sucesso!";
+
+        } catch (Exception e) {
+            System.out.println("EMAIL não ENVIADO. ERRO: " + e);
+            return "Erro ao enviar o email: " + e;
+        }
+    }
+
+    public String sendPasswordResetCode2(String destination, String recipientName, String code) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom(from);
+            helper.setTo(destination);
+            helper.setSubject("Seu código de alteração de senha");
+
+            // Carregar o template Freemarker
+            Map<String, Object> model = new HashMap<>();
+            model.put("recipientName", recipientName);
+            model.put("code", code);
+
+            String htmlContent = emailTemplateLoader.getTemplate("password-reset-code", model);
+            helper.setText(htmlContent, true);
+
+            // Anexar a imagem do logo
+            helper.addInline("logo", new ClassPathResource("static/images/barbosa.png"), "image/png");
+            helper.addInline("image", new ClassPathResource("static/images/getCode.jpg"), "image/jpg");
+
+            javaMailSender.send(message);
+
+            System.out.println("EMAIL ENVIADO PARA: " + destination);
+            return "Email enviado com sucesso!";
+        } catch (Exception e) {
+            System.out.println("EMAIL não ENVIADO. ERRO: " + e);
+            return "Erro ao enviar o email: " + e;
+        }
+    }
 }

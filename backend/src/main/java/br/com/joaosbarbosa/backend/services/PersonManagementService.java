@@ -28,64 +28,32 @@ public class PersonManagementService {
             person.setCodeSendDate(new Date());
             person.setPasswordRecoveryCode(generateRecoveryCode(person.getPersonId()));
             personRepository.saveAndFlush(person);
-            emailService.sendEmail(person.getEmail(), "Código Recuperação de Senha", "O seu código para recuperação de senha é: " + person.getPasswordRecoveryCode());
+//            emailService.sendEmail(person.getEmail(), "Código Recuperação de Senha", "O seu código para recuperação de senha é: " + person.getPasswordRecoveryCode());
+            emailService.sendPasswordResetCode2(person.getEmail(), person.getFirstName(), person.getPasswordRecoveryCode());
             return "Código enviado";
         } catch (EntityNotFoundException e) {
             throw new ControllerNotFoundException("Não foi encontrado registros no sistema com o e-mail informado: " + email);
         }
     }
 
-    //    public String changePassword(Person person) {
-//        try {
-//            System.out.println(person);
-//            Person entity = personRepository.findByEmailAndPasswordRecoveryCode(person.getEmail(), person.getPasswordRecoveryCode());
-//
-//            if (entity == null) return "Não existe registro no sistema com esse e-mail ou código informado";
-//
-//            // data em milisegundos
-//            Date difference = new Date(new Date().getTime() - entity.getCodeSendDate().getTime());
-//            if (difference.getTime() / 1000 >= 900) {
-//
-//                System.out.println("CHGEOU NO IF DE difference.getTime() / 1000 >= 900");
-//                entity.setPassword(person.getPassword());
-//                entity.setPasswordRecoveryCode(null);
-//                personRepository.saveAndFlush(entity);
-//
-//                emailService.sendEmail(entity.getEmail(), "Alteração de senha", "Tempo expirado. Solicite um novo codigo");
-//                return "Tempo expirado. Solicite um novo codigo";
-//
-//            } else {
-//                System.out.println("NÃO ENTRUPU NO IF");
-//
-//                emailService.sendEmail(entity.getEmail(), "Alteração de senha", "Tempo expirado. Solicite um novo codigo");
-//                return "Tempo expirado. Solicite um novo codigo";
-//            }
-//
-//
-//        } catch (Exception e) {
-//            System.out.println("Ocorreu um erro: " + e);
-//            return "Ocorreu um erro: " + e;
-//        }
-//    }
     public String changePassword(Person person) {
         try {
-            System.out.println(person);
             Person entity = personRepository.findByEmailAndPasswordRecoveryCode(person.getEmail(), person.getPasswordRecoveryCode());
 
-            if (entity == null) {
-                return "Não existe registro no sistema com esse e-mail ou código informado";
-            }
+            if (entity == null) return "Não existe registro no sistema com esse e-mail ou código informado";
+
 
             // data em milisegundos
             Date difference = new Date(new Date().getTime() - entity.getCodeSendDate().getTime());
-            if (difference.getTime() / 1000 >= 900) {
-                System.out.println("CHGEOU NO IF DE difference.getTime() / 1000 >= 900");
-                emailService.sendEmail(entity.getEmail(), "Alteração de senha", "Tempo expirado. Solicite um novo código");
+            if (difference.getTime() / 1000 <= 900) {
+                System.out.println("difference: "+difference.getTime());
+                System.out.println("difference / 1000: "+(difference.getTime() / 1000));
+                emailService.sendEmailExpiradCode(entity.getEmail(), entity.getFirstName(),"Tempo expirado");
                 return "Tempo expirado. Solicite um novo código";
             } else {
-                System.out.println("NÃO ENTROU NO IF");
                 entity.setPassword(person.getPassword());
                 entity.setPasswordRecoveryCode(null);
+                entity.setCodeSendDate(null);
                 personRepository.saveAndFlush(entity);
                 emailService.sendEmailChangePassword(entity.getEmail(), entity.getFirstName(), "Senha alterada com sucesso!");
                 return "Senha alterada com sucesso!";

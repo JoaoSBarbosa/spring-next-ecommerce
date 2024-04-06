@@ -14,8 +14,8 @@ public class personManagementController {
     PersonManagementService personManagementService;
 
     @PostMapping("/password/request_code/")
-    public ResponseEntity<String> getCode(@RequestParam("email") String email) {
-        String message = personManagementService.getCode(email);
+    public ResponseEntity<String> getCode(@RequestBody Person person) {
+        String message = personManagementService.getCode(person.getEmail());
         return ResponseEntity.ok().body(message);
     }
 
