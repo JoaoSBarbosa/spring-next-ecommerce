@@ -22,18 +22,18 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public String sendEmail(Email email) {
+    public String sendEmail(String destine, String title, String message) {
 
         try {
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             simpleMailMessage.setFrom(from);
-            simpleMailMessage.setTo(email.getDestination());
-            simpleMailMessage.setSubject(email.getTitle());
-            simpleMailMessage.setText(email.getMessage());
+            simpleMailMessage.setTo(destine);
+            simpleMailMessage.setSubject(title);
+            simpleMailMessage.setText(message);
 
             javaMailSender.send(simpleMailMessage);
 
-            System.out.println("EMAIL ENVIADO PARA: " + email.getDestination());
+            System.out.println("EMAIL ENVIADO PARA: " + destine);
             return "Email enviado com sucesso!";
         } catch (Exception e) {
             System.out.println("EMAIL não ENVIADO. ERRO: " + e);
